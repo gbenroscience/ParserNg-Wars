@@ -33,12 +33,13 @@ import org.openjdk.jmh.runner.options.TimeValue;
 public class ParserNGWars {
 
     // The expression to benchmark
-    private static final String EXPRESSION = "(sin(3) + cos(4 - sin(2))) ^ (-2)";
+    private static final String EXPRESSION1 = "(sin(3) + cos(4 - sin(2))) ^ (-2)";
+    private static final String EXPRESSION2 = "sin(3)+cos(5)-2.718281828459045^2";
+    private static final String EXPRESSION = "((12+5)*3 - (45/9))^2";
 
     // Pre-compiled instances (initialized in @Setup)
     private MathExpression parserNg;
-    private Expression exp4j;
-    private com.expression.parser.Parser javaMep; // adjust import if needed
+    private Expression exp4j; 
 
     @Setup(Level.Trial)
     public void setup() {
@@ -82,7 +83,7 @@ public class ParserNGWars {
                 .measurementIterations(5)
                 .measurementTime(TimeValue.milliseconds(1000))
                 .forks(2)
-                .jvmArgs("-Xms4g", "-Xmx4g") // tune heap if needed
+                .jvmArgs("-Xms2g", "-Xmx2g") // tune heap if needed
                 .build();
 
         new Runner(opt).run();
