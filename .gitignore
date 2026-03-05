@@ -1,0 +1,12 @@
+/build/
+.idea/
+parser-ng.iml
+target
+mvn-keys
+nbproject
+.DS_Store
+src/.DS_Store
+src/main/.DS_Store
+src/main/java/.DS_Store
+*.rtf
+build.xml
