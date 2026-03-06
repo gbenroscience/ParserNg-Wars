@@ -33,9 +33,11 @@ import org.openjdk.jmh.runner.options.TimeValue;
 public class ParserNGWars {
 
     // The expression to benchmark
-    private static final String EXPRESSION1 = "(sin(3) + cos(4 - sin(2))) ^ (-2)";
+    private static final String EXPRESSION = "(sin(3) + cos(4 - sin(2))) ^ (-2)";
     private static final String EXPRESSION2 = "sin(3)+cos(5)-2.718281828459045^2";
-    private static final String EXPRESSION = "((12+5)*3 - (45/9))^2";
+    private static final String EXPRESSION3 = "((12+5)*3 - (45/9))^2";
+    private static final String EXPRESSION4 = "5*sin(3+2)/(4*3-2)";
+    private static final String EXPRESSION5 = "(1+1)*(1+2)*(3+4)*(8+9)*(6-1)*(4^3.14159265357)-(3+2)^1.8";
 
     // Pre-compiled instances (initialized in @Setup)
     private MathExpression parserNg;
@@ -65,14 +67,14 @@ public class ParserNGWars {
         double result = exp4j.evaluate();
         blackhole.consume(result);
     }
-
+/*
     // === JavaMEP Benchmark ===
     @org.openjdk.jmh.annotations.Benchmark
     public void javaMep(Blackhole blackhole) {
         double result = Parser.simpleEval(EXPRESSION); // adjust method name to actual eval call
         blackhole.consume(result);
     }
-
+*/
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
                 .include(ParserNGWars.class.getSimpleName())
