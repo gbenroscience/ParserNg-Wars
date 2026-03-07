@@ -17,6 +17,7 @@ import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.openjdk.jmh.runner.options.TimeValue;
 
 /**
@@ -31,32 +32,43 @@ import org.openjdk.jmh.runner.options.TimeValue;
 @Fork(value = 2, warmups = 1)
 @Threads(1)
 public class ParserNGWars {
+    
+    private int[] randomData;
+    AtomicInteger cursor = new AtomicInteger();
 
     // The expression to benchmark
-    private static final String EXPRESSION = "(sin(3) + cos(4 - sin(2))) ^ (-2)";
+    private static final String EXPRESSION1 = "(sin(3) + cos(4 - sin(2))) ^ (-2)";
     private static final String EXPRESSION2 = "sin(3)+cos(5)-2.718281828459045^2";
     private static final String EXPRESSION3 = "((12+5)*3 - (45/9))^2";
     private static final String EXPRESSION4 = "5*sin(3+2)/(4*3-2)";
     private static final String EXPRESSION5 = "(1+1)*(1+2)*(3+4)*(8+9)*(6-1)*(4^3.14159265357)-(3+2)^1.8";
+    
+    private static final String EXPRESSION6 = "(sin(4) + 2 + ((7-5) * (3.14159 * 4^(14-10)) + sin(-3.141) + (0%4)) * 4/3 * 3/sqrt(4))";
+    
+     private static final String EXPRESSION = "((x^2 + sin(x)) / (1 + cos(x^2))) * (exp(x) / 10)";
 
     // Pre-compiled instances (initialized in @Setup)
     private MathExpression parserNg;
     private Expression exp4j; 
+    int dataLen = 0;
 
     @Setup(Level.Trial)
     public void setup() {
+          MathExpression.setAutoInitOn(true);
         // ParserNG - compile once
         parserNg = new MathExpression(EXPRESSION); 
 
         // Exp4J - build once
-        exp4j = new ExpressionBuilder(EXPRESSION).build();
-
+        exp4j = new ExpressionBuilder(EXPRESSION).variable("x").build();
+        this.randomData = ArrayFiller.splitLongIntoDigits(System.currentTimeMillis());
+        dataLen = randomData.length;
  
     }
 
     // === ParserNG Benchmark ===
     @org.openjdk.jmh.annotations.Benchmark
     public void parserNg(Blackhole blackhole) {
+        parserNg.setValue("x", randomData[cursor.getAndIncrement()%dataLen]);
         double result = parserNg.solveGeneric().scalar;
         blackhole.consume(result);
     }
@@ -64,6 +76,7 @@ public class ParserNGWars {
     // === Exp4J Benchmark ===
     @org.openjdk.jmh.annotations.Benchmark
     public void exp4j(Blackhole blackhole) {
+        exp4j.setVariable("x", randomData[cursor.getAndIncrement()%dataLen]);
         double result = exp4j.evaluate();
         blackhole.consume(result);
     }

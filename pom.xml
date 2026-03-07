@@ -83,7 +83,13 @@
     <dependencies>
   
     
-
+        <!-- JavaMEP / Expression Parser -->
+        <dependency>
+            <groupId>com.github.gbenroscience</groupId>
+            <artifactId>parser-ng</artifactId>
+            <version>0.2.4</version>
+            <type>jar</type>
+        </dependency>
         <!-- Exp4J -->
         <dependency>
             <groupId>net.objecthunter</groupId>
@@ -112,12 +118,6 @@
             <artifactId>jmh-generator-annprocess</artifactId>
             <version>1.37</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.gbenroscience</groupId>
-            <artifactId>parser-ng</artifactId>
-            <version>0.2.4</version>
-            <type>jar</type>
         </dependency>
     </dependencies>
 </project>
