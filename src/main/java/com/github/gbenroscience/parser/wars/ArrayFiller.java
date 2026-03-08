@@ -139,7 +139,7 @@ public class ArrayFiller {
                             ex.printStackTrace();
                         }
                     }
-                    System.out.println(getName() + " Ready to race...");
+                    System.out.println(getName() + ">>> Ready to race...");
                     int i = 0;
                     double start = System.nanoTime();
                     for (; i < bucketSize && !gameOver; i++) {
@@ -174,19 +174,21 @@ public class ArrayFiller {
     final class ParserNGProducerLib extends MathProducerLib {
 
         private final MathExpression parserNG;
+        private int xSlot;
 
-        static {
+        static { 
             MathExpression.setAutoInitOn(true);
         }
 
         public ParserNGProducerLib(String expr) {
             super("ParserNG", expr);
             this.parserNG = new MathExpression(expr);
+            this.xSlot = this.parserNG.getVariable("x").getFrameIndex();
         }
 
         @Override
         public double solve(double x) {
-            parserNG.setValue("x", x);
+            parserNG.updateSlot(xSlot, x);
             return parserNG.solveGeneric().scalar;
         }
 
@@ -234,11 +236,12 @@ public class ArrayFiller {
     }
 
     public static void main(String[] args) {
-        ArrayFiller arf = new ArrayFiller(SERIAL, 10000000);
+        ArrayFiller arf = new ArrayFiller(PARALLEL, 10000000);
         /*
 "sin(x)+3*cos(x)"
          */
-        arf.benchmark("((x^2 + sin(x)) / (1 + cos(x^2))) * (exp(x) / 10)");
+       // arf.benchmark("((x^2 + sin(x)) / (1 + cos(x^2))) * (exp(x) / 10)");
+        arf.benchmark("(cos(1+exp(x))/sqrt(sin(x)^2-cos(x)^2))+atan(x)");
     }
 
 }
