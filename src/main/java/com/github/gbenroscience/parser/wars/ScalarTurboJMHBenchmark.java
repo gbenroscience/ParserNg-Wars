@@ -34,9 +34,10 @@ import org.openjdk.jmh.runner.options.TimeValue;
 @Fork(1)
 public class ScalarTurboJMHBenchmark {
 
-    // We sweep from 1 to 40 variables to watch the JVM calling convention break down
-    //@Param({"1", "5", "10", "15", "20", "30", "40"})
-    @Param({"50", "60","63"})
+    // We sweep from 1 to 80 variables to watch the JVM calling convention break down
+    ///@Param({"1", "20", "40", "50", "60", "63", "64", "80"})
+       // We sweep from 20 to 63 variables to watch the JVM calling convention break down
+    @Param({"20", "40", "60", "63"})
     public int varCount;
 
     private FastCompositeExpression arrayEvaluator;
