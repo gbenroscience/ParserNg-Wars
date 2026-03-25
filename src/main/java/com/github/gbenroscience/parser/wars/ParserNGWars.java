@@ -3,6 +3,8 @@
  */
 package com.github.gbenroscience.parser.wars;
 
+import com.github.gbenroscience.parser.wars.manual.Stats;
+import com.github.gbenroscience.parser.wars.manual.MathToJaninoConverter;
 import com.github.gbenroscience.parser.MathExpression;
 import com.github.gbenroscience.parser.turbo.tools.FastCompositeExpression;
 import com.github.gbenroscience.parser.turbo.tools.ScalarTurboEvaluator;

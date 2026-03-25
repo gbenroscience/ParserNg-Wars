@@ -1,4 +1,4 @@
-package com.github.gbenroscience.parser.wars;
+package com.github.gbenroscience.parser.wars.manual;
 
 /**
  *

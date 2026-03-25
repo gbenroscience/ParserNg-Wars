@@ -10,3 +10,7 @@ src/main/.DS_Store
 src/main/java/.DS_Store
 *.rtf
 build.xml
+
+src/main/java/com/github/gbenroscience/parser/wars/manual/
+
+//mvn clean verify -U && java -jar target/benchmarks.jar ScalarTurboJMHBenchmark -prof gc -f 1 -wi 5 -i 5

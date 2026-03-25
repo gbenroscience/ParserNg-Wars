@@ -1,9 +1,10 @@
-package com.github.gbenroscience.parser.wars;
+package com.github.gbenroscience.parser.wars.manual;
 
 import com.github.gbenroscience.parser.MathExpression;
 import com.github.gbenroscience.parser.turbo.FastExpression;
 import com.github.gbenroscience.parser.turbo.tools.FastCompositeExpression;
 import com.github.gbenroscience.parser.turbo.tools.ScalarTurboEvaluator;
+import com.github.gbenroscience.parser.wars.ParserNGWars;
 import com.github.gbenroscience.util.ConsoleTable;
 import com.github.gbenroscience.util.FunctionManager;
 import com.github.gbenroscience.util.VariableManager;

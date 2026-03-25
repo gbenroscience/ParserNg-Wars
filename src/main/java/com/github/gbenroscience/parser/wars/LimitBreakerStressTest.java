@@ -1,14 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.github.gbenroscience.parser.wars;
 
 /**
- *
+ * This shows Janino falling flat before ParserNG Turbo( the array based version) beyond the 255 limit of the JVM
  * @author GBEMIRO
  */
-import com.github.gbenroscience.parser.MathExpression;
+import com.github.gbenroscience.parser.MathExpression; 
 import com.github.gbenroscience.parser.turbo.tools.ScalarTurboEvaluator;
 import org.codehaus.janino.ExpressionEvaluator;
 
@@ -17,7 +13,7 @@ import java.util.Arrays;
 public class LimitBreakerStressTest {
 
     public static void main(String[] args) {
-        int largeVarCount = 500; // Well beyond the JVM 255-slot limit
+        int largeVarCount = 3000; // Well beyond the JVM 255-slot limit
         
         // 1. Generate a massive linear expression: x0 + x1 + ... + x499
         StringBuilder sb = new StringBuilder("x0");
@@ -62,8 +58,6 @@ public class LimitBreakerStressTest {
         try {
             System.out.print("Testing ParserNG (Array-Based)... ");
             MathExpression me = new MathExpression(bigExpr, false);
-            // Force registration of all variables
-            for (String name : varNames) { me.getVariable(name); }
             
             // Compile using the stable Array-Based strategy
             var evaluator = new ScalarTurboEvaluator(me, false).compile();
@@ -72,7 +66,37 @@ public class LimitBreakerStressTest {
             System.out.println("SUCCESS!");
             System.out.println("Result: " + result);
         } catch (Throwable t) {
-            System.err.println("\n[PARSERNG FAILED]: " + t.getMessage());
+            System.err.println("\n[PARSERNG-Array FAILED]: " + t.getMessage());
+        }
+        
+                // 3. Attempt ParserNG Compilation (Widening-Based)
+        try {
+            System.out.print("Testing ParserNG (Widening-Based)... ");
+            MathExpression me = new MathExpression(bigExpr, false);
+            
+            // Compile using the stable Array-Based strategy
+            var evaluator = new ScalarTurboEvaluator(me, true).compile();
+            
+            double result = (double) evaluator.applyScalar(values);
+            System.out.println("SUCCESS!");
+            System.out.println("Result: " + result);
+        } catch (Throwable t) {
+            System.err.println("\n[PARSERNG-Widening FAILED]: " + t.getMessage());
+        }
+        
+                
+                // 3. Attempt ParserNG normal mode evaluation
+        try {
+            System.out.print("Testing ParserNG (normal-mode-Based)... ");
+            MathExpression me = new MathExpression(bigExpr, false); 
+            for(MathExpression.Slot s : me.getSlotItems()){
+                me.updateSlot(s.getSlot(), 1.0);
+            }
+            double result = me.solveGeneric().scalar;
+            System.out.println("SUCCESS!");
+            System.out.println("Result: " + result);
+        } catch (Throwable t) {
+            System.err.println("\n[PARSERNG-normal-mode FAILED]: " + t.getMessage());
         }
     }
 }
