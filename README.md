@@ -81,7 +81,7 @@ The following data represents high-concurrency performance and memory allocation
 | :--- | :--- | :--- | :--- |
 | **ParserNG Turbo** | **123.120** | **≈ 0.00** | **Garbage-Free** |
 | ParserNG (Standard) | 188.011 | ≈ 0.00 | **Garbage-Free** |
-| Janino | 147.311 | 48.000 | Constant allocation |
+| Janino | 147.311 | ≈ 0.00 | Constant allocation |
 | exp4j | 366.531 | 320.001 | High Pressure |
 
 ---
@@ -143,7 +143,7 @@ Even under stricter GC profiling runs (longer warmup/measurement), Turbo stays t
 | Library          | Alloc Rate       | Bytes per Operation | GC Count | GC Time (ms) | Memory Winner |
 |------------------|------------------|---------------------|----------|--------------|---------------|
 | **exp4j**        | 422 – 864 MB/s   | 104 – 400 B/op      | 10 – 95  | 49 – 89      | ❌ Heavy     |
-| **Janino**       | 311 – 456 MB/s   | 48 B/op             | 10 – 53  | 46 – 53      | ⚠️ Moderate  |
+| **Janino**       | 311 – 456 MB/s   | **≈ 0–1 B/op**             | 10 – 53  | 46 – 53      | ⚠️ Moderate  |
 | **ParserNG + Turbo** | **0.001 – 0.007 MB/s** | **≈ 0–1 B/op** | **0**    | **0**        | **🏆 Zero-allocation** |
 
 **Analysis of Table 4**  
