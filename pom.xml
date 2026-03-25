@@ -81,15 +81,26 @@
         </plugins>
     </build>
     <dependencies>
-  
-    
-        <!-- JavaMEP / Expression Parser -->
+        <!--Parsii-->
+        <dependency>
+            <groupId>com.scireum</groupId>
+            <artifactId>parsii</artifactId>
+            <version>4.0</version>
+        </dependency>
+        <!--ParserNG-->
         <dependency>
             <groupId>com.github.gbenroscience</groupId>
             <artifactId>parser-ng</artifactId>
-            <version>0.2.4</version>
+            <version>1.0.1.1</version>
             <type>jar</type>
         </dependency>
+        <!--mXparser-->
+        <dependency>
+            <groupId>org.mariuszgromada.math</groupId>
+            <artifactId>MathParser.org-mXparser</artifactId>
+            <version>6.1.0</version>
+        </dependency>
+        
         <!-- Exp4J -->
         <dependency>
             <groupId>net.objecthunter</groupId>
@@ -104,8 +115,7 @@
             <artifactId>com.expression.parser</artifactId>
             <version>3.3.0</version>
             <type>jar</type>
-        </dependency>
-
+        </dependency> 
         <!-- JMH for reliable benchmarking -->
         <dependency>
             <groupId>org.openjdk.jmh</groupId>
@@ -118,6 +128,12 @@
             <artifactId>jmh-generator-annprocess</artifactId>
             <version>1.37</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.janino</groupId>
+            <artifactId>janino</artifactId>
+            <version>3.1.12</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
 </project>
