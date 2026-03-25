@@ -14,6 +14,11 @@ This repository is designed to showcase the battles, or if you will, the perform
 
 ---
 
+If you run the file `com.github.gbenroscience.parser.wars.LimitBreakerStressTest.java`, you will see how ParserNg normal mode(new MathExpression(expr).solveGeneric()) and ParserNG Turbo (scalar with array passing) can endure any unique number of variables while Janino (and ParserNG Turbo, with widening vars passing) fail between 64 and 256 variables.
+
+If you run the file `com.github.gbenroscience.parser.wars.ScalarTurboJMHBenchmark.java`, you will see the difference (for simple variable slots) between array based parsing and widening-vars-based variable passing.
+
+
 The following data represents high-concurrency performance and memory allocation benchmarks for **ParserNG**, compared against **Janino** (Bytecode Compiler) and **exp4j** (Interpreted).
 
 ---
