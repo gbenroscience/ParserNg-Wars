@@ -62,7 +62,7 @@ public class FieryJanino {
     private ParserNGWars.JaninoMathFunction fastEvaluator;
 
     double[] turboArgs = new double[NUM_VARS];
-    private final int[] slots = new int[NUM_VARS]; 
+    private final int[] slots = new int[NUM_VARS];
 
     @Setup(Level.Trial)
     public void setup() {
@@ -87,9 +87,10 @@ public class FieryJanino {
     @org.openjdk.jmh.annotations.Benchmark
     public void parserNg(Blackhole blackhole) {
         generateInputs();
-        for (int i = 0; i < NUM_VARS; i++) {
+        /*for (int i = 0; i < NUM_VARS; i++) {
             parserNG.updateSlot(slots[i], xValues[i]);
-        }
+        }*/
+        parserNG.updateArgs(xValues);
         double result = parserNG.solveGeneric().scalar;
         blackhole.consume(result);
     }
@@ -98,9 +99,7 @@ public class FieryJanino {
     @org.openjdk.jmh.annotations.Benchmark
     public void parserNgTurboArrayBased(Blackhole blackhole) {
         generateInputs();
-        for (int i = 0; i < NUM_VARS; i++) {
-            turboArgs[slots[i]] = xValues[i];
-        }
+        turboArgs = xValues;
         double result = arrayBasedTurbo.applyScalar(turboArgs);
         blackhole.consume(result);
     }
@@ -108,14 +107,11 @@ public class FieryJanino {
     @org.openjdk.jmh.annotations.Benchmark
     public void parserNgTurboWideningBased(Blackhole blackhole) {
         generateInputs();
-        for (int i = 0; i < NUM_VARS; i++) {
-            turboArgs[slots[i]] = xValues[i];
-        }
-        double result = wideningBasedTurbo.applyScalar(turboArgs);
+        double result = wideningBasedTurbo.applyScalar(xValues);
         blackhole.consume(result);
     }
 
-     // === Janino Benchmark ===
+    // === Janino Benchmark ===
     @org.openjdk.jmh.annotations.Benchmark
     public void janino(Blackhole blackhole) {
         generateInputs();
@@ -137,7 +133,6 @@ public class FieryJanino {
         }
         // You can fine-tune the offsets to better match your original values if needed
     }
-
 
     private void setupJanino() {
         // Convert ParserNG syntax to Java syntax
