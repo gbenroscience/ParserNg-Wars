@@ -49,7 +49,7 @@ public class FieryJanino {
     // The expression to benchmark
     private static final String[] EXPRESSIONS = ParserNGWars.EXPRESSIONS;
 
-    private static final String EXPRESSION = EXPRESSIONS[EXPRESSIONS.length - 1];
+    private static final String EXPRESSION = EXPRESSIONS[EXPRESSIONS.length - 3];
 
     private static final String[] expressionVars = ParserNGWars.getVars(EXPRESSION);
 
@@ -90,7 +90,7 @@ public class FieryJanino {
         /*for (int i = 0; i < NUM_VARS; i++) {
             parserNG.updateSlot(slots[i], xValues[i]);
         }*/
-        parserNG.updateArgs(xValues);
+        parserNG.updateArgs(xValues);//assume the xValues lines up with the executionFrame
         double result = parserNG.solveGeneric().scalar;
         blackhole.consume(result);
     }
@@ -99,15 +99,16 @@ public class FieryJanino {
     @org.openjdk.jmh.annotations.Benchmark
     public void parserNgTurboArrayBased(Blackhole blackhole) {
         generateInputs();
-        turboArgs = xValues;
-        double result = arrayBasedTurbo.applyScalar(turboArgs);
+       // turboArgs = xValues;
+        double result = arrayBasedTurbo.applyScalar(xValues);//assume the xValues lines up with the turboArgs
         blackhole.consume(result);
     }
 
     @org.openjdk.jmh.annotations.Benchmark
     public void parserNgTurboWideningBased(Blackhole blackhole) {
         generateInputs();
-        double result = wideningBasedTurbo.applyScalar(xValues);
+       // turboArgs = xValues;
+        double result = wideningBasedTurbo.applyScalar(xValues);//assume the xValues lines up with the turboArgs
         blackhole.consume(result);
     }
 

@@ -48,8 +48,9 @@ public class LimitBreakerStressTest {
             Object[] params = Arrays.stream(values).boxed().toArray();
             System.out.println("Result: " + ee.evaluate(params));
         } catch (Exception | LinkageError e) {
-            System.err.println("\n[JANINO FAILED]: " + e.getMessage());
-            System.err.println("Reason: Exceeded JVM Method Parameter Limit (255 slots).");
+            e.printStackTrace();
+            System.out.println("\n[JANINO FAILED]: " + e.getMessage());
+            System.out.println("Reason: Exceeded JVM Method Parameter Limit (255 slots).");
         }
 
         System.out.println("--------------------------------------------------");
@@ -66,6 +67,7 @@ public class LimitBreakerStressTest {
             System.out.println("SUCCESS!");
             System.out.println("Result: " + result);
         } catch (Throwable t) {
+            t.printStackTrace();
             System.err.println("\n[PARSERNG-Array FAILED]: " + t.getMessage());
         }
         
@@ -81,7 +83,8 @@ public class LimitBreakerStressTest {
             System.out.println("SUCCESS!");
             System.out.println("Result: " + result);
         } catch (Throwable t) {
-            System.err.println("\n[PARSERNG-Widening FAILED]: " + t.getMessage());
+            t.printStackTrace();
+            System.out.println("\n[PARSERNG-Widening FAILED]: " + t.getMessage());
         }
         
                 

@@ -48,7 +48,7 @@ public class BaseJanino {
     // The expression to benchmark
     private static final String[] EXPRESSIONS = ParserNGWars.EXPRESSIONS;
 
-    private static final String EXPRESSION = EXPRESSIONS[EXPRESSIONS.length - 1];
+    private static final String EXPRESSION = EXPRESSIONS[EXPRESSIONS.length - 3];
 
     private static final String[] expressionVars = ParserNGWars.getVars(EXPRESSION);
 
