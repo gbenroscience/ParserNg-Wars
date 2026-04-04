@@ -27,8 +27,13 @@ import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
 
+import static com.github.gbenroscience.parser.wars.ParserNGWars.EXPRESSIONS;
+
 /**
- *
+ * Build with:
+ * mvn clean verify -U
+ * Run with:
+ * java -jar target/benchmarks.jar ".*FieryJanino.*" 
  * @author GBEMIRO
  */
 @State(Scope.Benchmark)
@@ -46,10 +51,9 @@ public class FieryJanino {
     }
     private int[] randomData;
     AtomicInteger cursor = new AtomicInteger();//
-    // The expression to benchmark
-    private static final String[] EXPRESSIONS = ParserNGWars.EXPRESSIONS;
+    // The expression to benchmark 
 
-    private static final String EXPRESSION = EXPRESSIONS[EXPRESSIONS.length - 3];
+    private static final String EXPRESSION = EXPRESSIONS[0];
 
     private static final String[] expressionVars = ParserNGWars.getVars(EXPRESSION);
 
@@ -61,18 +65,12 @@ public class FieryJanino {
     private FastCompositeExpression wideningBasedTurbo;
     private ParserNGWars.JaninoMathFunction fastEvaluator;
 
-    double[] turboArgs = new double[NUM_VARS];
-    private final int[] slots = new int[NUM_VARS];
-
     @Setup(Level.Trial)
     public void setup() {
         MathExpression.setAutoInitOn(true);
         // ParserNG - compile once
         parserNG = new MathExpression(EXPRESSION, true);
-        // Cache slot indices once
-        for (int i = 0; i < NUM_VARS; i++) {
-            slots[i] = parserNG.getVariable("x" + (i + 1)).getFrameIndex();
-        }
+
         try {
             arrayBasedTurbo = new ScalarTurboEvaluator(parserNG, false).compile();
             wideningBasedTurbo = new ScalarTurboEvaluator(parserNG, true).compile();
@@ -99,7 +97,7 @@ public class FieryJanino {
     @org.openjdk.jmh.annotations.Benchmark
     public void parserNgTurboArrayBased(Blackhole blackhole) {
         generateInputs();
-       // turboArgs = xValues;
+        // turboArgs = xValues;
         double result = arrayBasedTurbo.applyScalar(xValues);//assume the xValues lines up with the turboArgs
         blackhole.consume(result);
     }
@@ -107,7 +105,7 @@ public class FieryJanino {
     @org.openjdk.jmh.annotations.Benchmark
     public void parserNgTurboWideningBased(Blackhole blackhole) {
         generateInputs();
-       // turboArgs = xValues;
+        // turboArgs = xValues;
         double result = wideningBasedTurbo.applyScalar(xValues);//assume the xValues lines up with the turboArgs
         blackhole.consume(result);
     }
@@ -123,12 +121,14 @@ public class FieryJanino {
     @Benchmark
     public void baseline(Blackhole blackhole) {
         generateInputs(); // Measures just the overhead of creating the 30 variables
-        blackhole.consume(xValues[0]);
+        blackhole.consume(xValues.length == 0 ? 0.0 : xValues[0]);
     }
 
     private void generateInputs() {
         double base = randomData[cursor.getAndIncrement() % randomData.length];
-        xValues[0] = base;
+        if (xValues.length != 0) {
+            xValues[0] = base;
+        }
         for (int i = 1; i < NUM_VARS; i++) {
             xValues[i] = base + (i % 2 == 0 ? 1.0 : -1.0) * (0.1 + (i % 10) * 0.1); // your original pattern
         }

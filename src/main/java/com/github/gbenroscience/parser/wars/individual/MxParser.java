@@ -28,8 +28,13 @@ import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
 
+import static com.github.gbenroscience.parser.wars.ParserNGWars.EXPRESSIONS;
+
 /**
- *
+ * Build with:
+ * mvn clean verify -U
+ * Run with:
+ * java -jar target/benchmarks.jar ".*MxParser.*" 
  * @author GBEMIRO
  */
 @State(Scope.Benchmark)
@@ -43,8 +48,7 @@ public class MxParser {
  
     private int[] randomData;
     AtomicInteger cursor = new AtomicInteger();//
-    // The expression to benchmark
-    private static final String[] EXPRESSIONS = ParserNGWars.EXPRESSIONS;
+    // The expression to benchmark 
 
     private static final String EXPRESSION = EXPRESSIONS[EXPRESSIONS.length - 1];
 
@@ -127,7 +131,7 @@ public class MxParser {
     @Benchmark
     public void baseline(Blackhole blackhole) {
         generateInputs(); // Measures just the overhead of creating the 30 variables
-        blackhole.consume(xValues[0]);
+        blackhole.consume(xValues.length == 0 ? 0.0 : xValues[0]);
     }
 
     @org.openjdk.jmh.annotations.Benchmark
@@ -159,7 +163,9 @@ public class MxParser {
 
     private void generateInputs() {
         double base = randomData[cursor.getAndIncrement() % randomData.length];
-        xValues[0] = base;
+        if (xValues.length != 0) {
+            xValues[0] = base;
+        }
         for (int i = 1; i < NUM_VARS; i++) {
             xValues[i] = base + (i % 2 == 0 ? 1.0 : -1.0) * (0.1 + (i % 10) * 0.1); // your original pattern
         }
