@@ -53,7 +53,7 @@ public class FieryJanino {
     AtomicInteger cursor = new AtomicInteger();//
     // The expression to benchmark 
 
-    private static final String EXPRESSION = EXPRESSIONS[0];
+    private static final String EXPRESSION = EXPRESSIONS[EXPRESSIONS.length - 1];
 
     private static final String[] expressionVars = ParserNGWars.getVars(EXPRESSION);
 

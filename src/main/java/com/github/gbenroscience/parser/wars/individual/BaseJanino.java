@@ -51,7 +51,7 @@ public class BaseJanino {
     AtomicInteger cursor = new AtomicInteger();//
     // The expression to benchmark 
 
-    private static final String EXPRESSION = EXPRESSIONS[EXPRESSIONS.length - 3];
+    private static final String EXPRESSION = EXPRESSIONS[EXPRESSIONS.length - 1];
 
     private static final String[] expressionVars = ParserNGWars.getVars(EXPRESSION);
 
@@ -61,6 +61,7 @@ public class BaseJanino {
     private MathExpression parserNG;
     private FastCompositeExpression arrayBasedTurbo;
     private FastCompositeExpression wideningBasedTurbo;
+    private FastCompositeExpression functionBasedTurbo;
     private ExpressionEvaluator expressEvaluator;
 
     private final int[] slots = new int[NUM_VARS];
@@ -72,6 +73,12 @@ public class BaseJanino {
         // ParserNG - compile once
 
         parserNG = new MathExpression(EXPRESSION, true);
+        MathExpression p = new MathExpression("u(x1,x2,x3,x4,x5,x6)="+EXPRESSION+";u(x1,x2,x3,x4,x5,x6)", true);
+        try {
+            functionBasedTurbo = new ScalarTurboEvaluator(p, false).compile();
+        } catch (Throwable ex) {
+            System.getLogger(BaseJanino.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
 
         // Cache slot indices once
         for (int i = 0; i < NUM_VARS; i++) {
@@ -106,6 +113,14 @@ public class BaseJanino {
     public void parserNgTurboArrayBased(Blackhole blackhole) {
         generateInputs();
         double result = arrayBasedTurbo.applyScalar(xValues);
+        blackhole.consume(result);
+    }
+    
+        // === ParserNG Benchmark ===
+    @org.openjdk.jmh.annotations.Benchmark
+    public void functionBasedTurbo(Blackhole blackhole) {
+        generateInputs();
+        double result = functionBasedTurbo.applyScalar(xValues);
         blackhole.consume(result);
     }
 

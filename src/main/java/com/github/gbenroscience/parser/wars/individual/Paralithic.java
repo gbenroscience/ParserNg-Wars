@@ -50,7 +50,7 @@ public class Paralithic {
     AtomicInteger cursor = new AtomicInteger();//
     // The expression to benchmark 
 
-    private static final String EXPRESSION = EXPRESSIONS[EXPRESSIONS.length - 5];
+    private static final String EXPRESSION = EXPRESSIONS[EXPRESSIONS.length - 1];
     static {
         System.out.println("EXPRESSION = "+EXPRESSION);
     }
