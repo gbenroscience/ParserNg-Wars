@@ -35,14 +35,7 @@ The battles are fought over the expression:
 ## **Core Evaluation Speed (Latency), and GC pressure(alloc-rate)**
 
 *Lower scores indicate higher speed (ns/op).*
-
-
-
-
-
-
-
-
+ 
 
 ## 🚀 Latest Benchmarks (May 1, 2026)
  
@@ -84,7 +77,6 @@ The battles are fought over the expression:
 | **ParserNG (Standard)**                  | 100.45           | ±2.44       | 0.013 MB/s       | 0.001      | Regular ParserNG engine                    |
 
 ### 2. **FieryJanino** -   <span style="font-size:0.8em">(Janino with user supplied interface definition)</span>
-### Performance Comparison – `sin(sqrt(x1^2 + x2^2))`
 
 **JDK 24 • JMH 1.37 • Average Time (ns/op)**
 
