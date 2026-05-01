@@ -1,5 +1,6 @@
 package com.github.gbenroscience.parser.wars;
 
+import com.github.gbenroscience.parser.wars.individual.ParserNGWars;
 import com.github.gbenroscience.parser.MathExpression;
 import com.github.gbenroscience.parser.turbo.tools.FastCompositeExpression;
 import com.github.gbenroscience.parser.turbo.tools.ScalarTurboEvaluator;

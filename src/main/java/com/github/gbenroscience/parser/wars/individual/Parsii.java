@@ -3,7 +3,7 @@ package com.github.gbenroscience.parser.wars.individual;
 import com.github.gbenroscience.parser.MathExpression;
 import com.github.gbenroscience.parser.turbo.tools.FastCompositeExpression;
 import com.github.gbenroscience.parser.turbo.tools.ScalarTurboEvaluator;
-import static com.github.gbenroscience.parser.wars.ParserNGWars.EXPRESSIONS;
+import static com.github.gbenroscience.parser.wars.individual.ParserNGWars.EXPRESSIONS;
 import com.github.gbenroscience.parser.wars.Stats;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -53,7 +53,7 @@ public class Parsii {
     AtomicInteger cursor = new AtomicInteger();//
     // The expression to benchmark
      
-    private static final String EXPRESSION = EXPRESSIONS[EXPRESSIONS.length - 1];
+    private static final String EXPRESSION = ParserNGWars.getExpression(); 
 
     private static final String[] expressionVars = getVars(EXPRESSION);
 
@@ -69,6 +69,9 @@ public class Parsii {
 
     double[] turboArgs = new double[NUM_VARS];
     private final int[] slots = new int[NUM_VARS];
+    
+    
+    
 
     @Setup(Level.Trial)
     public void setup() {

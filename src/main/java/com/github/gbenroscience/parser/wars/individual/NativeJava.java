@@ -2,16 +2,30 @@ package com.github.gbenroscience.parser.wars.individual;
 
 import com.github.gbenroscience.parser.MathExpression;
 import com.github.gbenroscience.parser.turbo.tools.FastCompositeExpression;
-import com.github.gbenroscience.parser.turbo.tools.ScalarTurboEvaluator; 
-import org.openjdk.jmh.annotations.*;
+import com.github.gbenroscience.parser.turbo.tools.ScalarTurboEvaluator;
+import com.github.gbenroscience.parser.wars.Stats;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger; 
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Threads;
+import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
+import org.openjdk.jmh.profile.GCProfiler;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
-
-import java.util.concurrent.TimeUnit;
+import org.openjdk.jmh.annotations.*;
 
 /**
  * Build with:
@@ -23,127 +37,130 @@ import java.util.concurrent.TimeUnit;
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-@Warmup(iterations = 5, time = 200, timeUnit = TimeUnit.MILLISECONDS)
-@Measurement(iterations = 5, time = 200, timeUnit = TimeUnit.MILLISECONDS)
+@Warmup(iterations = 5, time = 2)
+@Measurement(iterations = 5, time = 2)
 @Fork(value = 1, warmups = 1)
 @Threads(1)
+//@Profiler(GCProfiler.class)
 public class NativeJava {
 
-    private static final String EXPRESSION = "sin(sqrt(x1^2 + x2^2))";
-    
-    // Pre-generated inputs - large enough to avoid cache effects
-    private static final int INPUT_SIZE = 100_000;
-    private double[] x1Values = new double[INPUT_SIZE];
-    private double[] x2Values = new double[INPUT_SIZE];
+    private int[] randomData;
+    AtomicInteger cursor = new AtomicInteger();//
+    // The expression to benchmark 
 
-    private int inputIndex = 0;
+    private static final String EXPRESSION = ParserNGWars.getExpression(); 
 
-    // ParserNG components
+    private static final String[] expressionVars = ParserNGWars.getVars(EXPRESSION);
+
+    private static final int NUM_VARS = expressionVars.length;
+    private final double[] xValues = new double[NUM_VARS];
+    // Pre-compiled instances (initialized in @Setup)
     private MathExpression parserNG;
     private FastCompositeExpression arrayBasedTurbo;
     private FastCompositeExpression wideningBasedTurbo;
-    private final double[] turboArgs = new double[2];
-    private final int[] slots = new int[2];
+
+
+    double[] turboArgs = new double[NUM_VARS];
+    private final int[] slots = new int[NUM_VARS];
 
     @Setup(Level.Trial)
     public void setup() {
         MathExpression.setAutoInitOn(true);
+        // ParserNG - compile once
 
-        // === Pre-generate inputs ===
-        long seed = System.currentTimeMillis();
-        for (int i = 0; i < INPUT_SIZE; i++) {
-            double base = (seed + i) % 1000 * 0.017;   // varied but predictable values
-            x1Values[i] = base;
-            x2Values[i] = base + 0.5 + (i % 17) * 0.1;
-        }
-
-        // === ParserNG setup ===
         parserNG = new MathExpression(EXPRESSION, true);
-        slots[0] = parserNG.getVariable("x1").getFrameIndex();
-        slots[1] = parserNG.getVariable("x2").getFrameIndex();
+
+        // Cache slot indices once
+        for (int i = 0; i < NUM_VARS; i++) {
+            slots[i] = parserNG.getVariable("x" + (i + 1)).getFrameIndex();
+        }
 
         try {
             arrayBasedTurbo = new ScalarTurboEvaluator(parserNG, false).compile();
             wideningBasedTurbo = new ScalarTurboEvaluator(parserNG, true).compile();
         } catch (Throwable ex) {
-            ex.printStackTrace();
+            System.getLogger(NativeJava.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
+  
+        this.randomData = Stats.splitLongIntoDigits(System.currentTimeMillis());
     }
 
-    private void nextInput() {
-        inputIndex = (inputIndex + 1) % INPUT_SIZE;
+    // === ParserNG Benchmark ===
+    @org.openjdk.jmh.annotations.Benchmark
+    public void parserNg(Blackhole blackhole) {
+        generateInputs();
+        for (int i = 0; i < NUM_VARS; i++) {
+            parserNG.updateSlot(slots[i], xValues[i]);
+        }
+        double result = parserNG.solveGeneric().scalar;
+        blackhole.consume(result);
     }
 
-    // ===================================================================
-    // ====================== BENCHMARKS =================================
-    // ===================================================================
+    // === ParserNG Benchmark ===
+    @org.openjdk.jmh.annotations.Benchmark
+    public void parserNgTurboArrayBased(Blackhole blackhole) {
+        generateInputs();
+        for (int i = 0; i < NUM_VARS; i++) {
+            turboArgs[slots[i]] = xValues[i];
+        }
+        double result = arrayBasedTurbo.applyScalar(turboArgs);
+        blackhole.consume(result);
+    }
+
+    @org.openjdk.jmh.annotations.Benchmark
+    public void parserNgTurboWideningBased(Blackhole blackhole) {
+        generateInputs();
+        for (int i = 0; i < NUM_VARS; i++) {
+            turboArgs[slots[i]] = xValues[i];
+        }
+        double result = wideningBasedTurbo.applyScalar(turboArgs);
+        blackhole.consume(result);
+    }
 
     @Benchmark
-    public void baseline(Blackhole bh) {
-        nextInput();
-        bh.consume(x1Values[inputIndex]);   // minimal overhead
+    public void baseline(Blackhole blackhole) {
+        generateInputs(); // Measures just the overhead of creating the 30 variables
+        blackhole.consume(xValues.length == 0 ? 0.0 : xValues[0]);   
     }
 
-    @Benchmark
+ 
+    
+       @Benchmark
     public void nativeJava(Blackhole bh) {
-        nextInput();
-        double x1 = x1Values[inputIndex];
-        double x2 = x2Values[inputIndex];
+         generateInputs();
+        double x1 = xValues[0];
+        double x2 = xValues[1];
         
         double result = Math.sin(Math.sqrt(x1 * x1 + x2 * x2));
-        bh.consume(result);
-    }
-
-    @Benchmark
-    public void parserNg(Blackhole bh) {
-        nextInput();
-        double x1 = x1Values[inputIndex];
-        double x2 = x2Values[inputIndex];
-
-        parserNG.updateSlot(slots[0], x1);
-        parserNG.updateSlot(slots[1], x2);
-        
-        double result = parserNG.solveGeneric().scalar;
-        bh.consume(result);
-    }
-
-    @Benchmark
-    public void parserNgTurboArrayBased(Blackhole bh) {
-        nextInput();
-        double x1 = x1Values[inputIndex];
-        double x2 = x2Values[inputIndex];
-
-        turboArgs[slots[0]] = x1;
-        turboArgs[slots[1]] = x2;
-
-        double result = arrayBasedTurbo.applyScalar(turboArgs);
-        bh.consume(result);
-    }
-
-    @Benchmark
-    public void parserNgTurboWideningBased(Blackhole bh) {
-        nextInput();
-        double x1 = x1Values[inputIndex];
-        double x2 = x2Values[inputIndex];
-
-        turboArgs[slots[0]] = x1;
-        turboArgs[slots[1]] = x2;
-
-        double result = wideningBasedTurbo.applyScalar(turboArgs);
         bh.consume(result);
     }
 
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
                 .include(NativeJava.class.getSimpleName())
+                .mode(Mode.AverageTime)
+                .timeUnit(TimeUnit.NANOSECONDS)
                 .warmupIterations(5)
-                .warmupTime(TimeValue.milliseconds(200))
+                .warmupTime(TimeValue.milliseconds(200L))
                 .measurementIterations(5)
                 .measurementTime(TimeValue.milliseconds(500))
                 .forks(2)
-                .addProfiler("gc")
+                .addProfiler(org.openjdk.jmh.profile.GCProfiler.class)
+                .jvmArgs("-Xms2g", "-Xmx2g") // tune heap if needed
                 .build();
 
         new Runner(opt).run();
     }
+
+    private void generateInputs() {
+        double base = randomData[cursor.getAndIncrement() % randomData.length];
+        if (xValues.length != 0) {
+            xValues[0] = base;
+        }
+        for (int i = 1; i < NUM_VARS; i++) {
+            xValues[i] = base + (i % 2 == 0 ? 1.0 : -1.0) * (0.1 + (i % 10) * 0.1); // your original pattern
+        }
+        // You can fine-tune the offsets to better match your original values if needed
+    }
+
 }

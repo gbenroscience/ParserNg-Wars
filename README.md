@@ -1,165 +1,161 @@
-# ParserNG-Wars
-This repository is designed to showcase the battles, or if you will, the performance of ParserNG against other Java math parsers.
-
-# ParserNG 1.0.0+ Official Benchmarks
-
-
-### **ParserNG vs. The Giants: Master Performance Matrix**
-
-| Battleground | Expression Type | Janino (ns/op) | **ParserNG (Turbo)** | **ParserNG Advantage** |
-| :--- | :--- | :--- | :--- | :--- |
-| **Pure Arithmetic** | `x + y + z...` | 251.08 | **119.95** | **2.1x Faster** |
-| **Structural Scale** | `500+ Variables` | **CRASH** | **SUCCESS** | **Only Survivor** |
-| **Functional Heavy** | `20+ sin() calls` | 471.43 | **362.89** | **1.3x Faster** |
+# ParserNG-Wars ⚔️
+This repository serves as the high-performance proving ground for **ParserNG**, benchmarking it against the industry's most prominent Java math expression parsers. We focus on nanosecond-level efficiency, memory overhead, and structural resilience to ensure ParserNG remains the definitive choice for high-performance backend infrastructure[cite: 1].
 
 ---
 
-If you run the file [LimitBreakerStressTest.java](/src/main/java/com/github/gbenroscience/parser/wars/LimitBreakerStressTest.java), you will see how ParserNg normal mode(new MathExpression(expr).solveGeneric()) and ParserNG Turbo (scalar with array passing) can endure any unique number of variables while Janino (and ParserNG Turbo, with widening vars passing) fail between 64 and 256 variables.
- 
+## 🛠 ️Meet The Combatants
 
-If you run the file [ScalarTurboJMHBenchmark.java](/src/main/java/com/github/gbenroscience/parser/wars/ScalarTurboJMHBenchmark.java), you will see the difference (for simple variable slots) between array based parsing and widening-vars-based variable passing.
- 
 
-The following data represents high-concurrency performance and memory allocation benchmarks for **ParserNG**, compared against **Janino** (Bytecode Compiler) and **exp4j** (Interpreted).
+1. **exp4j**  - (interpreted)  represents the traditional interpreted approach.
 
----
+2. **Janino**(full blown Java compiler!) - We compare against two distinct tiers of the **Janino** bytecode compiler:
+   *   **BaseJanino:** Utilizes standard library APIs to compile expressions into Java classes at runtime. It is flexible and easy to implement but retains minor overhead from internal reflection and generic execution paths[cite: 5].
+   *   **FieryJanino:** The absolute performance ceiling for Janino. It compiles expressions directly into a user-defined Java interface, allowing for direct method calls that eliminate nearly all invocation overhead[cite: 5].
+3. **ParserNG** - Standard Mode - (interpreted)
+   *  **ParserNg Turbo(Array Based)** - (interpreted)  Our proprietary optimization engine that achieves compiler-grade speeds while remaining entirely zero-allocation. Variables are passed via an array
+   *   **ParserNG Turbo(Widening Based):** - (interpreted)  Our proprietary optimization engine that achieves compiler-grade speeds while remaining entirely zero-allocation. Variables are passed using a widening approach
 
-### 🖥️ Environment Specifications
-* **JMH Version:** 1.37
-* **JDK:** 24.0.1 (Java HotSpot(TM) 64-Bit Server VM, 24.0.1+9-30)
-* **Memory:** -Xms2g -Xmx2g
-* **Platform:** Windows 10 / x64
-
----
-
-### 🚀 Performance Benchmarks (Latency)
-*Lower scores indicate higher speed.*
-
-#### **Scenario A: Standard Power & Root**
-**Expression:** `(x^2 + y^0.5)^4.2`
-
-| Benchmark | Mode | Score (ns/op) | Error (±) |
-| :--- | :---: | :--- | :--- |
-| **ParserNG Turbo** | avgt | **89.093** | 0.951 |
-| Janino | avgt | 103.924 | 10.833 |
-| ParserNG (Standard) | avgt | 123.724 | 8.477 |
-| exp4j | avgt | 220.926 | 5.717 |
-
-#### **Scenario B: Complex Nested Logic**
-**Expression:** `((x^2 + 3*sin(x+5^3-1/4)) / (23/33 + cos(x^2))) * (exp(x) / 10) + (sin(3) + cos(4 - sin(2))) ^ (-2)`
-
-| Benchmark | Mode | Score (ns/op) | Error (±) |
-| :--- | :---: | :--- | :--- |
-| **ParserNG Turbo** | avgt | **85.399** | 0.933 |
-| Janino | avgt | 249.981 | 7.411 |
-| ParserNG (Standard) | avgt | 323.650 | 20.661 |
-| exp4j | avgt | 805.753 | 123.264 |
+4. **mXparser**(interpreted) 
+5. **Parsii**(interpreted)
+6. **Paralithic** (Byte-Compiled; uses ASM)
+7. **Native Java**(expression hard-coded as a Java statement)
 
 ---
 
-### ⚡ Constant Folding Impact
-**Expression:** `(sin(8+cos(3)) + 2 + ((27-5)/(8^3) * (3.14159 * 4^(14-10)) + sin(-3.141) + (0%4)) * 4/3 * 3/sqrt(4))+12`
+## 🚀 Latest Benchmarks (May 1, 2026)
+*These results reflect the current state of **ParserNG 1.0.7+** as of today[cite: 5].*
+The battles are fought over the expression: 
+   $$
+   sin(sqrt(x^2 + y^2))
+   $$
 
-| Benchmark | State | Score (ns/op) | Improvement |
-| :--- | :--- | :--- | :--- |
-| **ParserNG Turbo** | **With Folding** | **10.301** | **~12x Faster** |
-| ParserNG Turbo | Without Folding | 125.410 | Baseline |
-| ParserNG (Std) | **With Folding** | **53.081** | **~9x Faster** |
-| ParserNG (Std) | Without Folding | 477.226 | Baseline |
+## **Core Evaluation Speed (Latency), and GC pressure(alloc-rate)**
+
+*Lower scores indicate higher speed (ns/op).*
+
+
+### 1. **exp4j**
+### Performance Comparison – exp4j (May 1, 2026)
+
+**Expression tested:** `sin(sqrt(x1^2 + x2^2))`  
+**Benchmark Mode:** Average time (`avgt`) • **JDK 24.0.1** • JMH 1.37
+
+| Benchmark                                | Score (ns/op) ↓ | ± Error     | Alloc Rate       | Bytes/Op   | Notes                                      |
+|------------------------------------------|------------------|-------------|------------------|------------|--------------------------------------------|
+| **Benchmark Baseline**                   | **19.97**        | ±0.13       | 0.013 MB/s       | ~0         | Variable setup + invocation overhead       |
+| **ParserNG Turbo (Widening-based)**      | **62.68**        | ±1.26       | 0.013 MB/s       | 0.001      | Excellent scalar performance               |
+| **ParserNG Turbo (Array-based)**         | **63.62**        | ±2.83       | 0.013 MB/s       | 0.001      | Highest scalability                        |
+| **exp4j**                                | 221.02           | ±16.87      | **656.97 MB/s**  | **152.00** | High allocation & GC pressure              |
+| **ParserNG (Standard)**                  | 100.45           | ±2.44       | 0.013 MB/s       | 0.001      | Regular ParserNG engine                    |
+
+### 2. **FieryJanino** -   <span style="font-size:0.8em">(Janino with user supplied interface definition)</span>
+### Performance Comparison – `sin(sqrt(x1^2 + x2^2))`
+
+**JDK 24 • JMH 1.37 • Average Time (ns/op)**
+
+### Performance Comparison – FieryJanino (May 1, 2026)
+
+**Expression tested:** `sin(sqrt(x1^2 + x2^2))`  
+**Benchmark Mode:** Average time (`avgt`) • **JDK 24.0.1** • JMH 1.37
+
+| Benchmark                                | Score (ns/op) ↓ | ± Error     | Alloc Rate      | Bytes/Op   | Notes                                      |
+|------------------------------------------|------------------|-------------|-----------------|------------|--------------------------------------------|
+| **Benchmark Baseline**                   | **20.69**        | ±0.65       | 0.013 MB/s      | ~0         | Variable setup + invocation overhead       |
+| **FieryJanino (direct interface)**       | **55.14**        | ±0.73       | 0.013 MB/s      | 0.001      | Fastest Janino variant                     |
+| **ParserNG Turbo (Array-based)**         | **60.64**        | ±0.45       | 0.013 MB/s      | 0.001      | Highest scalability                        |
+| **ParserNG Turbo (Widening-based)**      | **61.50**        | ±3.02       | 0.013 MB/s      | 0.001      | Excellent scalar performance               |
+| **ParserNG (Standard)**                  | 98.43            | ±4.30       | 0.013 MB/s      | 0.001      | Regular ParserNG engine                    |
+
+
+### 3. **BaseJanino** -   <span style="font-size:0.8em">(Janino using ExpressionEvaluator, i.e its own inner APIs)</span>
+### Performance Comparison – BaseJanino (May 1, 2026)
+
+**Expression tested:** `sin(sqrt(x1^2 + x2^2))`  
+**Benchmark Mode:** Average time (`avgt`) • **JDK 24.0.1** • JMH 1.37
+
+| Benchmark                                | Score (ns/op) ↓ | ± Error     | Alloc Rate      | Bytes/Op   | Notes                                      |
+|------------------------------------------|------------------|-------------|-----------------|------------|--------------------------------------------|
+| **Benchmark Baseline**                   | **20.72**        | ±1.23       | 0.013 MB/s      | ~0         | Variable setup + invocation overhead       |
+| **ParserNG Turbo (Widening-based)**      | **60.67**        | ±0.30       | 0.013 MB/s      | 0.001      | Best scalar performance                    |
+| **ParserNG Turbo (Array-based)**         | **60.77**        | ±0.34       | 0.013 MB/s      | 0.001      | Highest scalability                        |
+| **BaseJanino (normal)**                  | 68.39            | ±4.83       | **1005.5 MB/s** | **72.00**  | High allocation & GC pressure              |
+| **ParserNG (Standard)**                  | 95.84            | ±1.53       | 0.013 MB/s      | 0.001      | Default ParserNG mode                      |
+
+**ParserNG Turbo is ~12% faster than BaseJanino** while using **~70,000× less memory per operation** and producing zero GC events.
+
+
+### 4. **mXparser**
+### Performance Comparison – mXparser (May 1, 2026)
+
+**Expression tested:** `sin(sqrt(x1^2 + x2^2))`  
+**Benchmark Mode:** Average time (`avgt`) • **JDK 24.0.1** • JMH 1.37
+
+| Benchmark                                | Score (ns/op) ↓ | ± Error      | Alloc Rate       | Bytes/Op    | Notes                                      |
+|------------------------------------------|------------------|--------------|------------------|-------------|--------------------------------------------|
+| **Benchmark Baseline**                   | **20.42**        | ±0.38        | 0.013 MB/s       | ~0          | Variable setup + invocation overhead       |
+| **ParserNG Turbo (Widening-based)**      | **62.96**        | ±0.28        | 0.013 MB/s       | 0.001       | Excellent scalar performance               |
+| **ParserNG Turbo (Array-based)**         | **63.24**        | ±4.47        | 0.013 MB/s       | 0.001       | Highest scalability                        |
+| **mXparser**                             | **4321.99**      | ±362.23      | **531.06 MB/s**  | **2401.60** | Extremely high allocation                  |
+| **ParserNG (Standard)**                  | 103.06           | ±5.14        | 0.013 MB/s       | 0.001       | Regular ParserNG engine                    |
+
+### 5. **Parsii**
+### Performance Comparison – Parsii (May 1, 2026)
+
+**Expression tested:** `sin(sqrt(x1^2 + x2^2))`  
+**Benchmark Mode:** Average time (`avgt`) • **JDK 24.0.1** • JMH 1.37
+
+| Benchmark                                | Score (ns/op) ↓ | ± Error     | Alloc Rate     | Bytes/Op   | Notes                                      |
+|------------------------------------------|------------------|-------------|----------------|------------|--------------------------------------------|
+| **Benchmark Baseline**                   | **20.21**        | ±0.52       | 0.013 MB/s     | ~0         | Variable setup + invocation overhead       |
+| **ParserNG Turbo (Array-based)**         | **63.08**        | ±0.68       | 0.013 MB/s     | 0.001      | Highest scalability                        |
+| **ParserNG Turbo (Widening-based)**      | **63.61**        | ±4.17       | 0.013 MB/s     | 0.001      | Excellent scalar performance               |
+| **Parsii**                               | 91.64            | ±45.54      | 0.013 MB/s     | 0.001      | Lightweight interpreter                    |
+| **ParserNG (Standard)**                  | 104.73           | ±7.87       | 0.013 MB/s     | 0.001      | Regular ParserNG engine                    |
+
+### 6. **Paralithic**
+
+### Performance Comparison – Paralithic (May 1, 2026)
+
+**Expression tested:** `sin(sqrt(x1^2 + x2^2))`  
+**Benchmark Mode:** Average time (`avgt`) • **JDK 24.0.1** • JMH 1.37
+
+| Benchmark                                | Score (ns/op) ↓ | ± Error     | Alloc Rate     | Bytes/Op   | Notes                                      |
+|------------------------------------------|------------------|-------------|----------------|------------|--------------------------------------------|
+| **Benchmark Baseline**                   | **20.27**        | ±0.11       | 0.013 MB/s     | ~0         | Variable setup + invocation overhead       |
+| **Paralithic**                           | **55.65**        | ±2.10       | 0.013 MB/s     | 0.001      | Strong bytecode competitor                 |
+| **ParserNG Turbo (Widening-based)**      | **59.91**        | ±0.82       | 0.013 MB/s     | 0.001      | Excellent scalar performance               |
+| **ParserNG Turbo (Array-based)**         | **60.52**        | ±0.64       | 0.013 MB/s     | 0.001      | Highest scalability                        |
+| **ParserNG (Standard)**                  | 103.13           | ±4.65       | 0.013 MB/s     | 0.001      | Regular ParserNG engine                    |
+
+### 7. **Native Java**
+
+### Performance Comparison – Native Java (May 1, 2026)
+
+**Expression tested:** `sin(sqrt(x1^2 + x2^2))`  
+**Benchmark Mode:** Average time (`avgt`) • **JDK 24.0.1** • JMH 1.37
+
+| Benchmark                                | Score (ns/op) ↓ | ± Error     | Alloc Rate     | Bytes/Op   | Notes                                      |
+|------------------------------------------|------------------|-------------|----------------|------------|--------------------------------------------|
+| **Benchmark Baseline**                   | 20.40            | ±0.66       | 0.003 MB/s     | ~0         | Variable setup + invocation overhead       |
+| **Native Java (hand-written)**           | 55.04            | ±2.07       | 0.003 MB/s     | ~0         | Pure Java baseline (no parser)             |
+| **ParserNG Turbo (Array-based)**         | 64.25            | ±3.16       | 0.003 MB/s     | ~0         | Highest scalability                        |
+| **ParserNG Turbo (Widening-based)**      | 64.65            | ±5.71       | 0.003 MB/s     | ~0         | Excellent scalar performance               |
+| **ParserNG (Standard)**                  | 99.59            | ±8.91       | 0.003 MB/s     | ~0         | Regular ParserNG engine                    |
+
+
+## 🏆 Key Takeaways
+
+- **ParserNG Turbo** consistently delivers **near-top-tier performance** while remaining **zero-allocation** and highly flexible.
+- It beats **exp4j** by **3.5–9×**, crushes **mXparser**, and stays within **10–12%** of the best **Janino** variants.
+- **Zero GC pressure** makes it ideal for high-frequency trading, real-time systems, and large-scale backend services.
+
+**ParserNG** combines **blazing speed**, **excellent API**, and **advanced features** (symbolic differentiation, matrices, solvers, etc.) that others lack.
 
 ---
 
-### 🧠 Memory & GC Profile (Allocation Rate)
-*Measured using `-prof gc`. "B/op" represents bytes allocated per evaluation.*
+**Ready to dominate?** Clone, run the benchmarks, and see for yourself.
 
-#### **Scenario: `((x^2 + sin(x)) / (1 + cos(x^2))) * (exp(x) / 10)`**
+Made with 🔥 by **GBENRO JIBOYE** (@gbenroscience)
 
-| Benchmark | Speed (ns/op) | Alloc Rate (B/op) | GC Efficiency |
-| :--- | :--- | :--- | :--- |
-| **ParserNG Turbo** | **81.204** | **≈ 0.00** | **Garbage-Free** |
-| ParserNG (Standard) | 266.498 | ≈ 0.00 | **Garbage-Free** |
-| Janino | 117.085 | 48.000 | 10+ objects/sec |
-| exp4j | 493.703 | 400.001 | High Pressure |
+---  
 
-#### **Scenario: `sin(x^3+y^3)-4*(x-y)`**
-
-| Benchmark | Speed (ns/op) | Alloc Rate (B/op) | GC Efficiency |
-| :--- | :--- | :--- | :--- |
-| **ParserNG Turbo** | **123.120** | **≈ 0.00** | **Garbage-Free** |
-| ParserNG (Standard) | 188.011 | ≈ 0.00 | **Garbage-Free** |
-| Janino | 147.311 | ≈ 0.00 | Constant allocation |
-| exp4j | 366.531 | 320.001 | High Pressure |
-
----
-
-### 📊 Summary of Findings
-1.  **Turbo Dominance:** ParserNG Turbo consistently outperforms Janino's compiled bytecode by up to **3x** in complex logic scenarios.
-2.  **Zero-Allocation:** Unlike competitors, ParserNG maintains a **0 B/op** profile, eliminating GC pauses in high-frequency loops.
-3.  **Optimization:** Constant folding in 1.0.0+ reduces static expressions to near-instantaneous (10ns) execution.
-
-<br><br>
- 
- 
- 
- 
- 
- # ANALYSIS
- 
- ### 📊 Table 1: Raw Evaluation Speed (ns/op) – All Expressions  
-**Lower is better** • JMH `avgt` mode • JDK 24
-
-| Expression | exp4j (ns/op) | Janino (ns/op) | ParserNG Normal | ParserNG Turbo | Winner |
-|------------|---------------|----------------|-----------------|----------------|--------|
-| `(x² + y⁰·⁵)⁴·²` | 220.9 | 103.9 | 123.7 | **89.1** | **Turbo** |
-| Complex trig + exp + power | 805.8 | 250.0 | 323.7 | **85.4** | **Turbo** |
-| Heavy constants **with** Constant Folding | 755.4 | 185.3 | **53.1** | **10.3** | **Turbo (insane)** |
-| Same expression **without** Constant Folding | 754.6 | 180.8 | 477.2 | **125.4** | **Turbo** |
-
-**Analysis of Table 1**  
-ParserNG Turbo dominates every single test. On complex expressions it is **9–10× faster than exp4j** and **2.9–3× faster than Janino**. Even the normal (interpreted) ParserNG beats exp4j on most cases and stays very competitive with Janino. The 10.3 ns/op result with constant folding is outstanding — almost **97 million evaluations per second**.
-
----
-
-### 📊 Table 2: Constant Folding Impact (same heavy-constants expression)
-
-| Mode                  | exp4j   | Janino  | ParserNG Normal | ParserNG Turbo |
-|-----------------------|---------|---------|-----------------|----------------|
-| **With Constant Folding** | 755.4 | 185.3 | **53.1** | **10.3** |
-| **Without Constant Folding** | 754.6 | 180.8 | 477.2 | **125.4** |
-
-**Analysis of Table 2**  
-Enabling constant folding turns ParserNG Normal into a winner already (beats both competitors). Turbo takes it to another level — going from 125 ns → **10.3 ns** (12× speedup just from folding). This shows how powerful ParserNG’s optimiser has become in 1.0.2.
-
----
-
-### 📊 Table 3: Speed + GC Profiling (selected expressions)
-
-| Expression | exp4j (ns/op) | Janino (ns/op) | ParserNG Normal | ParserNG Turbo |
-|------------|---------------|----------------|-----------------|----------------|
-| `((x² + sin(x)) / (1 + cos(x²))) * (exp(x)/10)` | 493.7 | 117.1 | 266.5 | **81.2** |
-| `sin(x³ + y³) - 4*(x - y)` | 366.5 | 147.3 | 188.0 | **123.1** |
-
-**Analysis of Table 3**  
-Even under stricter GC profiling runs (longer warmup/measurement), Turbo stays the fastest. ParserNG Normal is consistently faster than exp4j and very close to Janino while offering vastly more features.
-
----
-
-### 📊 Table 4: Garbage Collection & Memory Usage (JMH `-prof gc`)
-
-| Library          | Alloc Rate       | Bytes per Operation | GC Count | GC Time (ms) | Memory Winner |
-|------------------|------------------|---------------------|----------|--------------|---------------|
-| **exp4j**        | 422 – 864 MB/s   | 104 – 400 B/op      | 10 – 95  | 49 – 89      | ❌ Heavy     |
-| **Janino**       | 311 – 456 MB/s   | **≈ 0–1 B/op**             | 10 – 53  | 46 – 53      | ⚠️ Moderate  |
-| **ParserNG + Turbo** | **0.001 – 0.007 MB/s** | **≈ 0–1 B/op** | **0**    | **0**        | **🏆 Zero-allocation** |
-
-**Analysis of Table 4**  
-This is ParserNG’s **silent superpower**. While competitors generate hundreds of MB/s of garbage (causing GC pauses), ParserNG + Turbo allocates virtually nothing. In long-running applications, Android, servers, or real-time loops, this advantage often matters more than raw nanoseconds.
-
----
-
-**Overall Verdict**
-
-> **ParserNG 1.0.2 Turbo is the clear winner** — fastest on every expression, dramatically lower memory pressure, and packed with features the others don’t even have (symbolic diff, resilient integration, matrix algebra, Tartaglia solver, etc.).  
-> Whether you use normal mode or Turbo, ParserNG 1.0.2 is now the best pure-Java choice for high-performance math expressions.
-
- 

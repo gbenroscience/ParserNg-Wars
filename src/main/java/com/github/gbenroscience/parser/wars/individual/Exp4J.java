@@ -3,7 +3,6 @@ package com.github.gbenroscience.parser.wars.individual;
 import com.github.gbenroscience.parser.MathExpression;
 import com.github.gbenroscience.parser.turbo.tools.FastCompositeExpression;
 import com.github.gbenroscience.parser.turbo.tools.ScalarTurboEvaluator;
-import com.github.gbenroscience.parser.wars.ParserNGWars;
 import com.github.gbenroscience.parser.wars.Stats;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,7 +27,7 @@ import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
 
-import static com.github.gbenroscience.parser.wars.ParserNGWars.EXPRESSIONS;
+import static com.github.gbenroscience.parser.wars.individual.ParserNGWars.EXPRESSIONS;
 /**
  * Build with:
  * mvn clean verify -U
@@ -49,7 +48,7 @@ public class Exp4J {
     AtomicInteger cursor = new AtomicInteger();//
     // The expression to benchmark 
 
-    private static final String EXPRESSION = EXPRESSIONS[EXPRESSIONS.length - 1];
+    private static final String EXPRESSION = ParserNGWars.getExpression(); 
 
     private static final String[] expressionVars = ParserNGWars.getVars(EXPRESSION);
 
