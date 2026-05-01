@@ -6,19 +6,19 @@ This repository serves as the high-performance proving ground for **ParserNG**, 
 ## 🛠 ️Meet The Combatants
 
 
-1. **exp4j**  - (interpreted)  represents the traditional interpreted approach.
+1. **exp4j**  - (interpreted)  Popular interpreted parser
 
 2. **Janino**(full blown Java compiler!) - We compare against two distinct tiers of the **Janino** bytecode compiler:
-   *   **BaseJanino:** Utilizes standard library APIs to compile expressions into Java classes at runtime. It is flexible and easy to implement but retains minor overhead from internal reflection and generic execution paths[cite: 5].
-   *   **FieryJanino:** The absolute performance ceiling for Janino. It compiles expressions directly into a user-defined Java interface, allowing for direct method calls that eliminate nearly all invocation overhead[cite: 5].
+   *   **BaseJanino:** Utilizes standard library APIs to compile expressions into Java classes at runtime. It is flexible and easy to implement but retains minor overhead from internal reflection and generic execution paths
+   *   **FieryJanino:** The absolute performance ceiling for Janino. It compiles expressions directly into a user-defined Java interface, allowing for direct method calls that eliminate nearly all invocation overhead
 3. **ParserNG** - Standard Mode - (interpreted)
    *  **ParserNg Turbo(Array Based)** - (interpreted)  Our proprietary optimization engine that achieves compiler-grade speeds while remaining entirely zero-allocation. Variables are passed via an array
    *   **ParserNG Turbo(Widening Based):** - (interpreted)  Our proprietary optimization engine that achieves compiler-grade speeds while remaining entirely zero-allocation. Variables are passed using a widening approach
 
-4. **mXparser**(interpreted) 
-5. **Parsii**(interpreted)
-6. **Paralithic** (Byte-Compiled; uses ASM)
-7. **Native Java**(expression hard-coded as a Java statement)
+4. **mXparser**(interpreted) Feature-rich, heavyweight
+5. **Parsii**(interpreted) Lightweight interpreter
+6. **Paralithic** (Byte-Compiled; uses ASM) Strong bytecode contender
+7. **Native Java**(expression hard-coded as a Java statement) Hand-written baseline
 
 ---
 
