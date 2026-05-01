@@ -1,5 +1,5 @@
 # ParserNG-Wars ⚔️
-This repository serves as the high-performance proving ground for **ParserNG**, benchmarking it against the industry's most prominent Java math expression parsers. We focus on nanosecond-level efficiency, memory overhead, and structural resilience to ensure ParserNG remains the definitive choice for high-performance backend infrastructure[cite: 1].
+This repository serves as the high-performance proving ground for **ParserNG**, benchmarking it against the industry's most prominent Java math expression parsers. We focus on nanosecond-level efficiency, memory overhead, and structural resilience to ensure ParserNG remains the definitive choice for high-performance backend infrastructure
 
 ---
 
