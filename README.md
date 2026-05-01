@@ -23,7 +23,7 @@ This repository serves as the high-performance proving ground for **ParserNG**, 
 ---
 
 ## 🚀 Latest Benchmarks (May 1, 2026)
-*These results reflect the current state of **ParserNG 1.0.7+** as of today[cite: 5].*
+*These results reflect the current state of **ParserNG 1.0.7+** 
 The battles are fought over the expression: 
    $$
    sin(sqrt(x^2 + y^2))
@@ -33,6 +33,47 @@ The battles are fought over the expression:
 
 *Lower scores indicate higher speed (ns/op).*
 
+
+
+
+
+
+
+
+
+## 🚀 Latest Benchmarks (May 1, 2026)
+
+**Expression:** `sin(sqrt(x1^2 + x2^2))`  
+**Environment:** JDK 24.0.1 • JMH 1.37 • Average Time (ns/op)
+
+### Speed Summary
+
+| Library / Engine                  | Score (ns/op) | vs Fastest | Alloc Rate       | Bytes/Op   | Verdict                     |
+|-----------------------------------|---------------|------------|------------------|------------|-----------------------------|
+| **Native Java (hand-written)**    | **25.57**     | 1.0×       | 0.013 MB/s       | ~0         | Theoretical floor           |
+| **FieryJanino (direct)**          | **55.14**     | 2.16×      | 0.013 MB/s       | 0.001      | Current speed king          |
+| **Paralithic**                    | **55.65**     | 2.18×      | 0.013 MB/s       | 0.001      | Excellent bytecode          |
+| **ParserNG Turbo**                | **59.9 – 64.7**| **2.34–2.53×** | **0.013 MB/s** | **0.001**  | **Best overall**            |
+| **BaseJanino**                    | 68.39         | 2.68×      | **1005 MB/s**    | **72**     | High GC pressure            |
+| **Parsii**                        | 91.64         | 3.59×      | 0.013 MB/s       | 0.001      | Decent lightweight          |
+| **exp4j**                         | 221.02        | 8.67×      | **657 MB/s**     | **152**    | Heavy allocation            |
+| **mXparser**                      | **4322**      | **169×**   | **531 MB/s**     | **2402**   | Not competitive             |
+
+> **ParserNG Turbo** is the **dominant king** of all Java math **interpreted** parsers — delivering near-bytecode speeds with the safety, flexibility, and compatibility of a pure interpreter.
+
+---
+
+
+
+
+
+
+
+
+
+
+
+## Detailed Results
 
 ### 1. **exp4j**
 ### Performance Comparison – exp4j (May 1, 2026)
@@ -153,9 +194,50 @@ The battles are fought over the expression:
 
 ---
 
-**Ready to dominate?** Clone, run the benchmarks, and see for yourself.
+**ParserNG Turbo** represents the clear winner for real-world use,  standing as the **dominant king** of all Java math **interpreted** parsers — combining near-native speed, true zero-allocation behavior, unmatched flexibility, and rock-solid deployment safety.
+
+ 
+## ⚡ Why ParserNG Turbo Reigns Supreme
+**ParserNG** is a **pure interpreted** engine — it generates **no class files/bytecode** at runtime.
+
+This gives it unique advantages in environments where dynamic class generation is restricted or problematic:
+This gives it decisive advantages no bytecode-based solution can match:
+
+
+- Superior compatibility across the entire Java ecosystem (desktop, server, mobile, embedded)
+- **Complete avoidance of DEXing issues** on Android (no multi-dex, no 64k method limit problems)
+- Works seamlessly in **Android**, **Spring Boot**, **Quarkus**, **GraalVM** native images, and **secured JVMs**
+- Zero risk of `ClassLoader`/`SecurityManager` conflicts or generated-class memory leaks
+- Simpler deployment and better compatibility across the Java ecosystem
+
+It stays within **10–15%** of the absolute fastest specialized solutions (FieryJanino / Paralithic) while offering:
+- True **zero-allocation** (eliminates GC pauses)
+- Superior API flexibility
+- Excellent scalability with large numbers of variables
+- A rich feature set no competitor matches
+
+While others trade speed for simplicity or vice versa, **ParserNG Turbo** delivers the best overall package.
+
+
+---
+
+
+## 🏆 Final Verdict
+
+In the war of Java math expression parsers, **ParserNG Turbo** stands tall.
+
+It delivers performance that rivals or beats specialized bytecode compilers while maintaining the safety and portability that only a pure interpreted solution can guarantee.
+
+**ParserNG** — Blazing Fast. Zero Compromise. Built for the Real World.
+
+**Ready to win?** Clone the repo, run the benchmarks, and join the fast lane.
+
+---
 
 Made with 🔥 by **GBENRO JIBOYE** (@gbenroscience)
 
+*Benchmarks updated May 1, 2026.*
+
 ---  
+
 
