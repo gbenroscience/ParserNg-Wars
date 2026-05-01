@@ -52,27 +52,20 @@ The battles are fought over the expression:
 
 | Library / Engine                  | Score (ns/op) | vs Fastest | Alloc Rate       | Bytes/Op   | Verdict                     |
 |-----------------------------------|---------------|------------|------------------|------------|-----------------------------|
-| **Native Java (hand-written)**    | **25.57**     | 1.0×       | 0.013 MB/s       | ~0         | Theoretical floor           |
-| **FieryJanino (direct)**          | **55.14**     | 2.16×      | 0.013 MB/s       | 0.001      | Current speed king          |
-| **Paralithic**                    | **55.65**     | 2.18×      | 0.013 MB/s       | 0.001      | Excellent bytecode          |
-| **ParserNG Turbo**                | **59.9 – 64.7**| **2.34–2.53×** | **0.013 MB/s** | **0.001**  | **Best overall**            |
-| **BaseJanino**                    | 68.39         | 2.68×      | **1005 MB/s**    | **72**     | High GC pressure            |
-| **Parsii**                        | 91.64         | 3.59×      | 0.013 MB/s       | 0.001      | Decent lightweight          |
-| **exp4j**                         | 221.02        | 8.67×      | **657 MB/s**     | **152**    | Heavy allocation            |
-| **mXparser**                      | **4322**      | **169×**   | **531 MB/s**     | **2402**   | Not competitive             |
+| **Native Java (hand-written)**    | **55.04**     | 1.0×       | 0.013 MB/s       | ~0         | Theoretical floor           |
+| **FieryJanino (direct)**          | **55.14**     | 1.002×      | 0.013 MB/s       | 0.001      | Current speed king          |
+| **Paralithic**                    | **55.65**     | 1.011×      | 0.013 MB/s       | 0.001      | Excellent bytecode          |
+| **ParserNG Turbo**                | **59.9 – 64.7**| **1.088–1.176×** | **0.013 MB/s** | **0.001**  | **Best overall**            |
+| **BaseJanino**                    | 68.39         | 1.24×      | **1005 MB/s**    | **72**     | High GC pressure            |
+| **Parsii**                        | 91.64         | 1.66×      | 0.013 MB/s       | 0.001      | Decent lightweight          |
+| **exp4j**                         | 221.02        | 4.01×      | **657 MB/s**     | **152**    | Heavy allocation            |
+| **mXparser**                      | **4322**      | **78.52×**   | **531 MB/s**     | **2402**   | Not competitive             |
 
 > **ParserNG Turbo** is the **dominant king** of all Java math **interpreted** parsers — delivering near-bytecode speeds with the safety, flexibility, and compatibility of a pure interpreter.
 
 ---
 
-
-
-
-
-
-
-
-
+ 
 
 
 ## Detailed Results
