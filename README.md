@@ -53,9 +53,9 @@ The battles are fought over the expression:
 | Library / Engine                  | Score (ns/op) | vs Fastest | Alloc Rate       | Bytes/Op   | Verdict                     |
 |-----------------------------------|---------------|------------|------------------|------------|-----------------------------|
 | **Native Java (hand-written)**    | **55.04**     | 1.0×       | 0.013 MB/s       | ~0         | Theoretical floor           |
-| **FieryJanino (direct)**          | **55.14**     | 1.002×      | 0.013 MB/s       | 0.001      | Current speed king          |
-| **Paralithic**                    | **55.65**     | 1.011×      | 0.013 MB/s       | 0.001      | Excellent bytecode          |
-| **ParserNG Turbo**                | **59.9 – 64.7**| **1.088–1.176×** | **0.013 MB/s** | **0.001**  | **Best overall**            |
+| **FieryJanino (direct)**          | **55.14**     | 1.00×      | 0.013 MB/s       | 0.001      | Current speed king          |
+| **Paralithic**                    | **55.65**     | 1.01×      | 0.013 MB/s       | 0.001      | Excellent bytecode          |
+| **ParserNG Turbo**                | **59.9 – 64.7**| **1.09x–1.18×** | **0.013 MB/s** | **0.001**  | **Best overall**            |
 | **BaseJanino**                    | 68.39         | 1.24×      | **1005 MB/s**    | **72**     | High GC pressure            |
 | **Parsii**                        | 91.64         | 1.66×      | 0.013 MB/s       | 0.001      | Decent lightweight          |
 | **exp4j**                         | 221.02        | 4.01×      | **657 MB/s**     | **152**    | Heavy allocation            |
