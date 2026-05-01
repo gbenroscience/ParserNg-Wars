@@ -25,9 +25,11 @@ This repository serves as the high-performance proving ground for **ParserNG**, 
 ## 🚀 Latest Benchmarks (May 1, 2026)
 *These results reflect the current state of **ParserNG 1.0.7+** 
 The battles are fought over the expression: 
-    ```Java
-    sin(sqrt(x^2 + y^2))
-    ```
+
+```java
+        sin(sqrt(x^2 + y^2))
+```
+   
     
 
 ## **Core Evaluation Speed (Latency), and GC pressure(alloc-rate)**
