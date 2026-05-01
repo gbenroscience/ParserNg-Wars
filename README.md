@@ -45,8 +45,7 @@ The battles are fought over the expression:
 
 
 ## 🚀 Latest Benchmarks (May 1, 2026)
-
-**Expression:** `sin(sqrt(x1^2 + x2^2))`  
+ 
 **Environment:** JDK 24.0.1 • JMH 1.37 • Average Time (ns/op)
 
 ### Speed Summary
@@ -80,8 +79,7 @@ The battles are fought over the expression:
 
 ### 1. **exp4j**
 ### Performance Comparison – exp4j (May 1, 2026)
-
-**Expression tested:** `sin(sqrt(x1^2 + x2^2))`  
+ 
 **Benchmark Mode:** Average time (`avgt`) • **JDK 24.0.1** • JMH 1.37
 
 | Benchmark                                | Score (ns/op) ↓ | ± Error     | Alloc Rate       | Bytes/Op   | Notes                                      |
@@ -98,8 +96,7 @@ The battles are fought over the expression:
 **JDK 24 • JMH 1.37 • Average Time (ns/op)**
 
 ### Performance Comparison – FieryJanino (May 1, 2026)
-
-**Expression tested:** `sin(sqrt(x1^2 + x2^2))`  
+  
 **Benchmark Mode:** Average time (`avgt`) • **JDK 24.0.1** • JMH 1.37
 
 | Benchmark                                | Score (ns/op) ↓ | ± Error     | Alloc Rate      | Bytes/Op   | Notes                                      |
@@ -114,7 +111,7 @@ The battles are fought over the expression:
 ### 3. **BaseJanino** -   <span style="font-size:0.8em">(Janino using ExpressionEvaluator, i.e its own inner APIs)</span>
 ### Performance Comparison – BaseJanino (May 1, 2026)
 
-**Expression tested:** `sin(sqrt(x1^2 + x2^2))`  
+
 **Benchmark Mode:** Average time (`avgt`) • **JDK 24.0.1** • JMH 1.37
 
 | Benchmark                                | Score (ns/op) ↓ | ± Error     | Alloc Rate      | Bytes/Op   | Notes                                      |
@@ -131,7 +128,6 @@ The battles are fought over the expression:
 ### 4. **mXparser**
 ### Performance Comparison – mXparser (May 1, 2026)
 
-**Expression tested:** `sin(sqrt(x1^2 + x2^2))`  
 **Benchmark Mode:** Average time (`avgt`) • **JDK 24.0.1** • JMH 1.37
 
 | Benchmark                                | Score (ns/op) ↓ | ± Error      | Alloc Rate       | Bytes/Op    | Notes                                      |
@@ -145,7 +141,7 @@ The battles are fought over the expression:
 ### 5. **Parsii**
 ### Performance Comparison – Parsii (May 1, 2026)
 
-**Expression tested:** `sin(sqrt(x1^2 + x2^2))`  
+
 **Benchmark Mode:** Average time (`avgt`) • **JDK 24.0.1** • JMH 1.37
 
 | Benchmark                                | Score (ns/op) ↓ | ± Error     | Alloc Rate     | Bytes/Op   | Notes                                      |
@@ -160,7 +156,7 @@ The battles are fought over the expression:
 
 ### Performance Comparison – Paralithic (May 1, 2026)
 
-**Expression tested:** `sin(sqrt(x1^2 + x2^2))`  
+
 **Benchmark Mode:** Average time (`avgt`) • **JDK 24.0.1** • JMH 1.37
 
 | Benchmark                                | Score (ns/op) ↓ | ± Error     | Alloc Rate     | Bytes/Op   | Notes                                      |
@@ -175,7 +171,6 @@ The battles are fought over the expression:
 
 ### Performance Comparison – Native Java (May 1, 2026)
 
-**Expression tested:** `sin(sqrt(x1^2 + x2^2))`  
 **Benchmark Mode:** Average time (`avgt`) • **JDK 24.0.1** • JMH 1.37
 
 | Benchmark                                | Score (ns/op) ↓ | ± Error     | Alloc Rate     | Bytes/Op   | Notes                                      |
