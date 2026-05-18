@@ -4,27 +4,19 @@ This repository serves as the high-performance proving ground for **ParserNG**, 
 ---
 
 ## Run the code for yourself
-The codes for each benchmark vs ParserNG are located in
+The codes for each benchmark  are located in
 ```Java
 package com.github.gbenroscience.parser.wars.individual;
 ```
-You may run the codes for yourself. There are many expressions also in class
+
+
+To run this benchmark by yourself, run the class:
 ```Java
 com.github.gbenroscience.parser.wars.individual.ParserNGWars
 ```
-All you have to do is to change the index in 
-```Java
-com.github.gbenroscience.parser.wars.individual.ParserNGWars
-```
-to point to the relevant expression in the array,
-```Java
-ParserNGWars.EXPRESSIONS
-```
-Once this is set, all the benchmarking classes in package
-```Java
-package com.github.gbenroscience.parser.wars.individual;
-```
-will pick up that expression and run with it.
+
+This class is a simple, interactive terminal application which will run the benchmark in a competitive mode.
+
 
 
 ## 🛠 ️Meet The Combatants
