@@ -253,117 +253,146 @@ public class ParserNGWars {
      * @param args
      */
     public static void main(String[] args) {
+        System.out.println("=========================================================");
+        System.out.println("   Welcome to the Math Parser Benchmarks: ParserNG Wars  ");
+        System.out.println("=========================================================\n");
+        System.out.println("AVAILABLE EXPRESSIONS:\n" + EXPRESSIONS_MAP);
+
+        // Use a single Scanner for the entire life of the main method
+        Scanner scanner = new Scanner(System.in);
+
+        // 1. Robust Expression Selection Loop
+        while (true) {
+            System.out.print("Choose an expression index (0 to " + (EXPRESSIONS.length - 1) + "): ");
+            if (!scanner.hasNextInt()) {
+                System.err.println("Invalid input! Please enter a valid integer.\n");
+                scanner.next(); // Clear the bad token
+                continue;
+            }
+            index = scanner.nextInt();
+            if (index >= 0 && index < EXPRESSIONS.length) {
+                break; // Valid choice!
+            }
+            System.err.println("Index out of bounds! Choose between 0 and " + (EXPRESSIONS.length - 1) + ".\n");
+        }
+        scanner.nextLine(); // Critical: Consume the leftover newline character!
+
+        System.out.println("\nSelected Expression: " + EXPRESSIONS[index] + "\n");
+
+        // 2. Build the Engines Menu
+        String menu = """
+        Select the Math Engines to benchmark (comma-separated digits):
+        [0] Native Java
+        [1] FieryJanino
+        [2] BaseJanino
+        [3] Paralithic
+        [4] mXParser
+        [5] exp4J
+        [6] Parsii
+        [7] ParserNG-Standard
+        [8] ParserNG-Turbo (Array-Based)
+        [9] ParserNG-Turbo (Widening-Args-Based)
         
-        System.out.println("Welcome to the Math Parser Benchmarks, aka ParserNG Wars.\n");
-        System.out.println("HERE ARE THE AVAILABLE EXPRESSIONS, You may select one of them by the index:\n\n"+EXPRESSIONS_MAP);
-        
-        System.out.println("Choose an expression by typing the number before it\n");
-        index = new Scanner(System.in).nextInt();
-        if(index >= EXPRESSIONS.length){
-            System.err.println("Invalid expression selected. Choose an index between 0 and "+EXPRESSIONS.length);
+        Enter engines (e.g., 0,3,8): """;
+        System.out.print(menu);
+
+        String digitsCommand = scanner.nextLine(); // Using nextLine() to safely catch spaces
+        if (digitsCommand == null || digitsCommand.trim().isEmpty()) {
+            System.err.println("No engines selected. Exiting.");
             return;
         }
-        
-        System.out.println("\n\nBenchmark Expression: "+EXPRESSIONS[index]+"\n\n");
-        
-        StringBuilder sb = new StringBuilder("Native Java - 0\n");
-        sb.append("FieryJanino - 1\n");
-        sb.append("BaseJanino - 2\n");
-        sb.append("Paralithic - 3\n");
-        sb.append("mXParser - 4\n");
-        sb.append("exp4J - 5\n");
-        sb.append("Parsii - 6\n");
-        sb.append("ParserNG-Standard - 7\n");
-        sb.append("ParserNG-Turbo(Array-Based) - 8\n");
-        sb.append("ParserNG-Turbo(Widening-Args-Based) - 9\n");
-        System.out.println(sb.toString());
 
-        
-        System.out.println("Welcome to the Math Parser Benchmarks, aka ParserNG Wars.\nEnter a comma separated list of the digits for the Math Parsers You want to Benchmark.");
-        Scanner sc = new Scanner(System.in);
+        // 3. Parse and Configure JMH Options
+        try {
+            OptionsBuilder opt = new OptionsBuilder();
+            opt.include(Baseline.class.getSimpleName()); // Always include baseline
 
-        String digitsCommand = sc.next();
-        if (digitsCommand != null && !digitsCommand.trim().isEmpty()) {
             String[] digitsTextArray = digitsCommand.split(",");
-            int[] digits = new int[digitsTextArray.length];
-            try {
-                for (int i = 0; i < digitsTextArray.length; i++) {
-                    digits[i] = Integer.parseInt(digitsTextArray[i]);
+            StringBuilder versusBuilder = new StringBuilder("Baseline vs ");
+            int addedEnginesCount = 0;
+
+            for (String token : digitsTextArray) {
+                String trimmedToken = token.trim();
+                if (trimmedToken.isEmpty()) {
+                    continue;
                 }
-                OptionsBuilder opt = new OptionsBuilder();
-                opt.include(Baseline.class.getSimpleName());
-                StringBuilder versusBuilder = new StringBuilder();
-                for (int i = 0; i < digitsTextArray.length; i++) {
-                    switch (digits[i]) {
-                        case 0:
-                            opt.include(NativeJava.class.getSimpleName());
-                            versusBuilder.append("NativeJava vs");
-                            break;
-                        case 1:
-                            opt.include(FieryJanino.class.getSimpleName());
-                            versusBuilder.append("FieryJanino vs");
-                            break;
-                        case 2:
-                            opt.include(BaseJanino.class.getSimpleName());
-                            versusBuilder.append("BaseJanino vs");
-                            break;
-                        case 3:
-                            opt.include(Paralithic.class.getSimpleName());
-                            versusBuilder.append("Paralithic vs");
-                            break;
-                        case 4:
-                            opt.include(MxParser.class.getSimpleName());
-                            versusBuilder.append("MxParser vs");
-                            break;
-                        case 5:
-                            opt.include(Exp4J.class.getSimpleName());
-                            versusBuilder.append("Exp4J vs");
-                            break;
-                        case 6:
-                            opt.include(Parsii.class.getSimpleName());
-                            versusBuilder.append("Parsii vs");
-                            break;
-                        case 7:
-                            opt.include(ParserNGStandard.class.getSimpleName());
-                            versusBuilder.append("ParserNG-Standard vs");
-                            break;
-                        case 8:
-                            opt.include(ParserNGTurboArrayBased.class.getSimpleName());
-                            versusBuilder.append("ParserNG-Turbo-Array-Based vs");
-                            break;
-                        case 9:
-                            opt.include(ParserNGTurboWideningBased.class.getSimpleName());
-                            versusBuilder.append("ParserNG-Turbo-Widening-Args-Based vs");
-                            break;
-                        default:
-                            throw new AssertionError();
+
+                int engineChoice = Integer.parseInt(trimmedToken);
+                switch (engineChoice) {
+                    case 0 -> {
+                        opt.include(NativeJava.class.getSimpleName());
+                        versusBuilder.append("NativeJava vs ");
                     }
+                    case 1 -> {
+                        opt.include(FieryJanino.class.getSimpleName());
+                        versusBuilder.append("FieryJanino vs ");
+                    }
+                    case 2 -> {
+                        opt.include(BaseJanino.class.getSimpleName());
+                        versusBuilder.append("BaseJanino vs ");
+                    }
+                    case 3 -> {
+                        opt.include(Paralithic.class.getSimpleName());
+                        versusBuilder.append("Paralithic vs ");
+                    }
+                    case 4 -> {
+                        opt.include(MxParser.class.getSimpleName());
+                        versusBuilder.append("MxParser vs ");
+                    }
+                    case 5 -> {
+                        opt.include(Exp4J.class.getSimpleName());
+                        versusBuilder.append("Exp4J vs ");
+                    }
+                    case 6 -> {
+                        opt.include(Parsii.class.getSimpleName());
+                        versusBuilder.append("Parsii vs ");
+                    }
+                    case 7 -> {
+                        opt.include(ParserNGStandard.class.getSimpleName());
+                        versusBuilder.append("ParserNG-Standard vs ");
+                    }
+                    case 8 -> {
+                        opt.include(ParserNGTurboArrayBased.class.getSimpleName());
+                        versusBuilder.append("ParserNG-Turbo-Array-Based vs ");
+                    }
+                    case 9 -> {
+                        opt.include(ParserNGTurboWideningBased.class.getSimpleName());
+                        versusBuilder.append("ParserNG-Turbo-Widening-Args-Based vs ");
+                    }
+                    default ->
+                        System.err.println("Warning: Code [" + engineChoice + "] is invalid and skipped.");
                 }
-                String st = versusBuilder.toString();
-                String versus = st.substring(0, st.length() - 3);
-                System.out.println(versus+"\n\nLET THE GAMES BEGIN!\n\n");
-                
-                opt = (OptionsBuilder) opt.mode(Mode.AverageTime)
-                        .timeUnit(TimeUnit.NANOSECONDS)
-                        .warmupIterations(5)
-                        .warmupTime(TimeValue.milliseconds(200L))
-                        .measurementIterations(5)
-                        .measurementTime(TimeValue.milliseconds(500))
-                        .forks(2)
-                        .addProfiler(org.openjdk.jmh.profile.GCProfiler.class)
-                        .jvmArgs("-Xms2g", "-Xmx2g") // tune heap if needed
-                        .build();
-                new Runner(opt).run();
-
-            } catch (NumberFormatException e) {
-                System.err.println("An error exists in your digits entry. Please try again.");
-                e.printStackTrace();
-                System.out.println(sb.toString());
-            } catch (RunnerException ex) {
-                System.getLogger(ParserNGWars.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+                addedEnginesCount++;
             }
-        }
 
+            if (addedEnginesCount == 0) {
+                System.err.println("No valid engines were selected. Match abandoned!");
+                return;
+            }
+
+            String versusString = versusBuilder.toString();
+            System.out.println("\n⚔️  MATCH MATCHUP: " + versusString.substring(0, versusString.length() - 4));
+            System.out.println("🚀 LET THE GAMES BEGIN!\n");
+
+            // 4. Fluent, modern JMH Configuration
+            Options configurations = opt.mode(Mode.AverageTime)
+                    .timeUnit(TimeUnit.NANOSECONDS)
+                    .warmupIterations(5)
+                    .warmupTime(TimeValue.milliseconds(200L))
+                    .measurementIterations(5)
+                    .measurementTime(TimeValue.milliseconds(500))
+                    .forks(2)
+                    .addProfiler(org.openjdk.jmh.profile.GCProfiler.class)
+                    .jvmArgs("-Xms2g", "-Xmx2g")
+                    .build();
+
+            new Runner(configurations).run();
+
+        } catch (NumberFormatException e) {
+            System.err.println("Error: Input contains non-numeric characters inside the parser selections.");
+        } catch (RunnerException ex) {
+            System.getLogger(ParserNGWars.class.getName()).log(System.Logger.Level.ERROR, "JMH Execution failed", ex);
+        }
     }
 
     public static void main2(String[] args) {//
