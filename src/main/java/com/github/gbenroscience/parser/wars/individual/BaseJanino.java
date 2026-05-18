@@ -4,24 +4,14 @@ import com.github.gbenroscience.parser.MathExpression;
 import com.github.gbenroscience.parser.turbo.tools.FastCompositeExpression;
 import com.github.gbenroscience.parser.turbo.tools.ScalarTurboEvaluator;
 import com.github.gbenroscience.parser.wars.MathToJaninoConverter;
-import com.github.gbenroscience.parser.wars.Stats;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.codehaus.commons.compiler.CompileException;
 import org.codehaus.janino.ExpressionEvaluator;
 import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
-import org.openjdk.jmh.annotations.OutputTimeUnit;
-import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.Threads;
-import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
@@ -36,73 +26,39 @@ import org.openjdk.jmh.runner.options.TimeValue;
  * java -jar target/benchmarks.jar ".*BaseJanino.*" 
  * @author GBEMIRO
  */
-@State(Scope.Benchmark)
-@BenchmarkMode(Mode.AverageTime)
-@OutputTimeUnit(TimeUnit.NANOSECONDS)
-@Warmup(iterations = 5, time = 2)
-@Measurement(iterations = 5, time = 2)
-@Fork(value = 1, warmups = 1)
-@Threads(1)
-public class BaseJanino {
+public class BaseJanino extends ParserNGWars{
 
-    private int[] randomData;
-    AtomicInteger cursor = new AtomicInteger();//
-    // The expression to benchmark 
-
-    private static final String EXPRESSION = ParserNGWars.getExpression(); 
-
-    private static final String[] expressionVars = ParserNGWars.getVars(EXPRESSION);
-
-    private static final int NUM_VARS = expressionVars.length;
-    private final double[] xValues = new double[NUM_VARS];
     // Pre-compiled instances (initialized in @Setup)
     private MathExpression parserNG;
     private FastCompositeExpression arrayBasedTurbo;
     private FastCompositeExpression wideningBasedTurbo;
    // private FastCompositeExpression functionBasedTurbo;
     private ExpressionEvaluator expressEvaluator;
-
-    private final int[] slots = new int[NUM_VARS];
+ 
     private final Object janinoArgs[] = new Object[NUM_VARS];
 
     @Setup(Level.Trial)
     public void setup() {
+        initRandomData();
         MathExpression.setAutoInitOn(true);
         // ParserNG - compile once
 
         parserNG = new MathExpression(EXPRESSION, true);
-//        MathExpression p = new MathExpression("u(x1,x2,x3,x4,x5,x6)="+EXPRESSION+";u(x1,x2,x3,x4,x5,x6)", true);
-//        try {
-//            functionBasedTurbo = new ScalarTurboEvaluator(p, false).compile();
-//        } catch (Throwable ex) {
-//            System.getLogger(BaseJanino.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-//        }
-
-        // Cache slot indices once
-        for (int i = 0; i < NUM_VARS; i++) {
-            slots[i] = parserNG.getVariable("x" + (i + 1)).getFrameIndex();
-        }
-
+  
         try {
             arrayBasedTurbo = new ScalarTurboEvaluator(parserNG, false).compile();
             wideningBasedTurbo = new ScalarTurboEvaluator(parserNG, true).compile();
         } catch (Throwable ex) {
             System.getLogger(BaseJanino.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-        }
-
+        } 
         setupNormalJanino();
-
-        this.randomData = Stats.splitLongIntoDigits(System.currentTimeMillis());
     }
 
     // === ParserNG Benchmark ===
     @org.openjdk.jmh.annotations.Benchmark
     public void parserNg(Blackhole blackhole) {
-        generateInputs();
-        for (int i = 0; i < NUM_VARS; i++) {
-            parserNG.updateSlot(slots[i], xValues[i]);
-        }
-        double result = parserNG.solveGeneric().scalar;
+        generateInputs(); 
+        double result = parserNG.solveGeneric(xValues).scalar;
         blackhole.consume(result);
     }
 
@@ -124,15 +80,14 @@ public class BaseJanino {
 
     @org.openjdk.jmh.annotations.Benchmark
     public void parserNgTurboWideningBased(Blackhole blackhole) {
-        generateInputs();
-
+        generateInputs(); 
         double result = wideningBasedTurbo.applyScalar(xValues);
         blackhole.consume(result);
     }
 
     @org.openjdk.jmh.annotations.Benchmark
     public void normalJanino(Blackhole blackhole) {
-        generateInputsCustom();
+        generateObjectInputs();
         try {
             blackhole.consume(expressEvaluator.evaluate(janinoArgs));
         } catch (InvocationTargetException ex) {
@@ -146,27 +101,8 @@ public class BaseJanino {
         blackhole.consume(xValues.length == 0 ? 0.0 : xValues[0]);
     }
 
-    private void generateInputs() {
-        double base = randomData[cursor.getAndIncrement() % randomData.length];
-        if (xValues.length != 0) {
-            xValues[0] = base;
-        }
-        for (int i = 1; i < NUM_VARS; i++) {
-            xValues[i] = base + (i % 2 == 0 ? 1.0 : -1.0) * (0.1 + (i % 10) * 0.1); // your original pattern
-        }
-        // You can fine-tune the offsets to better match your original values if needed
-    }
-
-    private void generateInputsCustom() {
-        double base = randomData[cursor.getAndIncrement() % randomData.length];
-        if (janinoArgs.length != 0) {
-            janinoArgs[0] = base;
-        }
-        for (int i = 1; i < NUM_VARS; i++) {
-            janinoArgs[i] = base + (i % 2 == 0 ? 1.0 : -1.0) * (0.1 + (i % 10) * 0.1); // your original pattern
-        }
-        // You can fine-tune the offsets to better match your original values if needed
-    }
+ 
+ 
 
     private void setupNormalJanino() {
         try {

@@ -3,22 +3,11 @@ package com.github.gbenroscience.parser.wars.individual;
 import com.github.gbenroscience.parser.MathExpression;
 import com.github.gbenroscience.parser.turbo.tools.FastCompositeExpression;
 import com.github.gbenroscience.parser.turbo.tools.ScalarTurboEvaluator;
-import static com.github.gbenroscience.parser.wars.individual.ParserNGWars.EXPRESSIONS;
-import com.github.gbenroscience.parser.wars.Stats;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
-import org.openjdk.jmh.annotations.OutputTimeUnit;
-import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.Threads;
-import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
@@ -36,20 +25,10 @@ import com.dfsek.paralithic.eval.tokenizer.ParseException;
  * java -jar target/benchmarks.jar ".*Paralithic.*" 
  * @author GBEMIRO
  */
-@State(Scope.Benchmark)
-@BenchmarkMode(Mode.AverageTime)
-@OutputTimeUnit(TimeUnit.NANOSECONDS)
-@Warmup(iterations = 5, time = 2)
-@Measurement(iterations = 5, time = 2)
-@Fork(value = 1, warmups = 1)
-@Threads(1)
-public class Paralithic {
-
-    private int[] randomData;
-    AtomicInteger cursor = new AtomicInteger();//
+public class Paralithic extends ParserNGWars{
+ 
     // The expression to benchmark 
-
-    private static final String EXPRESSION = ParserNGWars.getExpression(); 
+ 
     static {
         System.out.println("EXPRESSION = "+EXPRESSION);
     }
@@ -67,6 +46,7 @@ public class Paralithic {
 
     @Setup(Level.Trial)
     public void setup() {
+        initRandomData();
         Parser parser = new Parser();
         com.dfsek.paralithic.eval.parser.Scope scope = new com.dfsek.paralithic.eval.parser.Scope();
         
@@ -89,18 +69,12 @@ public class Paralithic {
         } catch (Throwable ex) {
             System.getLogger(FieryJanino.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
-  
-        this.randomData = Stats.splitLongIntoDigits(System.currentTimeMillis());
     }
 
     // === ParserNG Benchmark ===
     @org.openjdk.jmh.annotations.Benchmark
     public void parserNg(Blackhole blackhole) {
-        generateInputs();
-        /*for (int i = 0; i < NUM_VARS; i++) {
-            parserNG.updateSlot(slots[i], xValues[i]);
-        }*/
-        //parserNG.updateArgs(xValues);//assume the xValues lines up with the executionFrame
+        generateInputs(); 
         double result = parserNG.solveGeneric(xValues).scalar;
         blackhole.consume(result);
     }
@@ -134,18 +108,7 @@ public class Paralithic {
         generateInputs(); // Measures just the overhead of creating the 30 variables
         blackhole.consume(xValues.length == 0 ? 0.0 : xValues[0]);
     }
-
-    private void generateInputs() {
-        double base = randomData[cursor.getAndIncrement() % randomData.length];
-        if (xValues.length != 0) {
-            xValues[0] = base;
-        }
-        for (int i = 1; i < NUM_VARS; i++) {
-            xValues[i] = base + (i % 2 == 0 ? 1.0 : -1.0) * (0.1 + (i % 10) * 0.1); // your original pattern
-        }
-        // You can fine-tune the offsets to better match your original values if needed
-    }
-
+ 
    
 
     public static void main(String[] args) throws RunnerException {
