@@ -1,6 +1,7 @@
 package com.github.gbenroscience.parser.wars.individual;
 
 import com.github.gbenroscience.parser.MathExpression;
+import com.github.gbenroscience.parser.turbo.tools.FastCompositeExpression;
 import com.github.gbenroscience.parser.wars.Stats;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,6 +29,12 @@ import org.openjdk.jmh.annotations.Warmup;
 @Fork(value = 1, warmups = 1)
 @Threads(1)
 public class ParserNGWars {
+    
+       
+    // Pre-compiled instances (initialized in @Setup)
+    protected MathExpression parserNG;
+    protected FastCompositeExpression arrayBasedTurbo;
+    protected FastCompositeExpression wideningBasedTurbo; 
 
     // The expression to benchmark
     public static final String[] EXPRESSIONS = {

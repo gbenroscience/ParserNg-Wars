@@ -1,7 +1,6 @@
 package com.github.gbenroscience.parser.wars.individual;
 
-import com.github.gbenroscience.parser.MathExpression;
-import com.github.gbenroscience.parser.turbo.tools.FastCompositeExpression;
+import com.github.gbenroscience.parser.MathExpression; 
 import com.github.gbenroscience.parser.turbo.tools.ScalarTurboEvaluator; 
 import java.util.concurrent.TimeUnit; 
 import org.openjdk.jmh.annotations.Benchmark;
@@ -24,15 +23,7 @@ import org.openjdk.jmh.runner.options.TimeValue;
  * @author GBEMIRO
  */
 public class NativeJava extends ParserNGWars{
-
  
-    // The expression to benchmark 
-
- 
-    // Pre-compiled instances (initialized in @Setup)
-    private MathExpression parserNG;
-    private FastCompositeExpression arrayBasedTurbo;
-    private FastCompositeExpression wideningBasedTurbo; 
 
     @Setup(Level.Trial)
     public void setup() {

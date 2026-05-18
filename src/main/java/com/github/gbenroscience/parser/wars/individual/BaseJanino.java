@@ -28,14 +28,9 @@ import org.openjdk.jmh.runner.options.TimeValue;
  */
 public class BaseJanino extends ParserNGWars{
 
-    // Pre-compiled instances (initialized in @Setup)
-    private MathExpression parserNG;
-    private FastCompositeExpression arrayBasedTurbo;
-    private FastCompositeExpression wideningBasedTurbo;
-   // private FastCompositeExpression functionBasedTurbo;
+    // Pre-compiled instances (initialized in @Setup) 
     private ExpressionEvaluator expressEvaluator;
- 
-    private final Object janinoArgs[] = new Object[NUM_VARS];
+  
 
     @Setup(Level.Trial)
     public void setup() {

@@ -26,22 +26,11 @@ import com.dfsek.paralithic.eval.tokenizer.ParseException;
  * @author GBEMIRO
  */
 public class Paralithic extends ParserNGWars{
- 
-    // The expression to benchmark 
- 
-    static {
-        System.out.println("EXPRESSION = "+EXPRESSION);
-    }
-
-    private static final String[] expressionVars = ParserNGWars.getVars(EXPRESSION);
-
-    private static final int NUM_VARS = expressionVars.length;
-    private final double[] xValues = new double[NUM_VARS];
-    // Pre-compiled instances (initialized in @Setup)
-    private MathExpression parserNG;
-    private FastCompositeExpression arrayBasedTurbo;
-    private FastCompositeExpression wideningBasedTurbo; 
+  
+  
+   
     
+    // Pre-compiled instances (initialized in @Setup) 
     private Expression expression;
 
     @Setup(Level.Trial)

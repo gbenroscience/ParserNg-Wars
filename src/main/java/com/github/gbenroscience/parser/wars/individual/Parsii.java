@@ -28,10 +28,7 @@ import parsii.tokenizer.ParseException;
 public class Parsii extends ParserNGWars{
 
    
-    // Pre-compiled instances (initialized in @Setup)
-    private MathExpression parserNG;
-    private FastCompositeExpression arrayBasedTurbo;
-    private FastCompositeExpression wideningBasedTurbo;
+    // Pre-compiled instances (initialized in @Setup) 
     private parsii.eval.Expression express;
     parsii.eval.Variable[] parsiiVars = new parsii.eval.Variable[expressionVars.length];
   

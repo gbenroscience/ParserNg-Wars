@@ -27,10 +27,7 @@ import org.openjdk.jmh.runner.options.TimeValue;
 public class Exp4J extends ParserNGWars{
 
  
-    // Pre-compiled instances (initialized in @Setup)
-    private MathExpression parserNG;
-    private FastCompositeExpression arrayBasedTurbo;
-    private FastCompositeExpression wideningBasedTurbo;
+    // Pre-compiled instances (initialized in @Setup) 
     private Expression exp4j;
 
     @Setup(Level.Trial)

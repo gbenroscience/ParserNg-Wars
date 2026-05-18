@@ -30,14 +30,9 @@ public class FieryJanino extends ParserNGWars{
 
         double apply(double x[]);
     }
-   
-    // The expression to benchmark 
-
-
-    // Pre-compiled instances (initialized in @Setup)
-    private MathExpression parserNG;
-    private FastCompositeExpression arrayBasedTurbo;
-    private FastCompositeExpression wideningBasedTurbo;
+    
+ 
+    // Pre-compiled instances (initialized in @Setup) 
     private ParserNGWars.JaninoMathFunction fastEvaluator;
 
     @Setup(Level.Trial)

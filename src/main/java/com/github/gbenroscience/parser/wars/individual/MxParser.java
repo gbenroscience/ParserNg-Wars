@@ -28,10 +28,7 @@ import org.openjdk.jmh.runner.options.TimeValue;
 public class MxParser extends ParserNGWars{
  
  
-    // Pre-compiled instances (initialized in @Setup)
-    private MathExpression parserNG;
-    private FastCompositeExpression arrayBasedTurbo;
-    private FastCompositeExpression wideningBasedTurbo;
+    // Pre-compiled instances (initialized in @Setup) 
     private org.mariuszgromada.math.mxparser.Expression mxParser;
  
     private final Argument[]mXparserArgs= new Argument[NUM_VARS];
