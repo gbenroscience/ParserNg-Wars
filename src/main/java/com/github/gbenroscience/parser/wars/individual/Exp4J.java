@@ -1,21 +1,10 @@
 package com.github.gbenroscience.parser.wars.individual;
 
-import com.github.gbenroscience.parser.MathExpression;
-import com.github.gbenroscience.parser.turbo.tools.FastCompositeExpression;
-import com.github.gbenroscience.parser.turbo.tools.ScalarTurboEvaluator;
-import java.util.concurrent.TimeUnit;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
-import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.infra.Blackhole;
-import org.openjdk.jmh.runner.Runner;
-import org.openjdk.jmh.runner.RunnerException;
-import org.openjdk.jmh.runner.options.Options;
-import org.openjdk.jmh.runner.options.OptionsBuilder;
-import org.openjdk.jmh.runner.options.TimeValue;
 
 /**
  * Build with:
@@ -41,7 +30,9 @@ public class Exp4J extends ParserNGWars{
         }
         exp4j = builder.build();
     }
- 
+    
+    
+    // ===exp4J Benchmark ===
     @org.openjdk.jmh.annotations.Benchmark
     public void exp4j(Blackhole blackhole) {
         generateInputs();

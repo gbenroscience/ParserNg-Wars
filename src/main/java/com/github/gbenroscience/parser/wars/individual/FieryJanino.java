@@ -1,19 +1,9 @@
 package com.github.gbenroscience.parser.wars.individual;
 
-import com.github.gbenroscience.parser.MathExpression;
-import com.github.gbenroscience.parser.turbo.tools.ScalarTurboEvaluator;
 import com.github.gbenroscience.parser.wars.MathToJaninoConverter;
-import java.util.concurrent.TimeUnit;
-import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.infra.Blackhole;
-import org.openjdk.jmh.runner.Runner;
-import org.openjdk.jmh.runner.RunnerException;
-import org.openjdk.jmh.runner.options.Options;
-import org.openjdk.jmh.runner.options.OptionsBuilder;
-import org.openjdk.jmh.runner.options.TimeValue;
  
 
 /**
@@ -36,24 +26,13 @@ public class FieryJanino extends ParserNGWars{
 
     @Setup(Level.Trial)
     public void setup() {
-        initRandomData();
-        MathExpression.setAutoInitOn(true);
-        // ParserNG - compile once
-        parserNG = new MathExpression(EXPRESSION, true);
- 
+        initRandomData();  
         setupJanino();
     }
 
-    // === ParserNG Benchmark ===
-    @org.openjdk.jmh.annotations.Benchmark
-    public void parserNg(Blackhole blackhole) {
-        generateInputs(); 
-        double result = parserNG.solveGeneric(xValues).scalar;
-        blackhole.consume(result);
-    }
  
 
-    // === Janino Benchmark ===
+    // === Janino(Fiery version) Benchmark ===
     @org.openjdk.jmh.annotations.Benchmark
     public void janino(Blackhole blackhole) {
         generateInputs();

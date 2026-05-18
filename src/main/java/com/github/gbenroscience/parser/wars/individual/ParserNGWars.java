@@ -1,10 +1,7 @@
 package com.github.gbenroscience.parser.wars.individual;
 
 import com.github.gbenroscience.parser.MathExpression;
-import com.github.gbenroscience.parser.turbo.tools.FastCompositeExpression;
-import com.github.gbenroscience.parser.wars.MathToJaninoConverter;
 import com.github.gbenroscience.parser.wars.Stats;
-import java.util.Arrays;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -18,7 +15,6 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Threads;
 import org.openjdk.jmh.annotations.Warmup;
 
-import java.util.function.ToDoubleFunction;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
@@ -84,6 +80,10 @@ public class ParserNGWars {
     };
 
     static int index = 23;//EXPRESSIONS.length - 3;
+
+    static {
+        index = Integer.getInteger("benchmark.index", 23);
+    }
 
     public static final String[] getVars(String e) {
         return new MathExpression(e).getVariablesNames();
@@ -275,6 +275,7 @@ public class ParserNGWars {
             }
             System.err.println("Index out of bounds! Choose between 0 and " + (EXPRESSIONS.length - 1) + ".\n");
         }
+        System.setProperty("benchmark.index", String.valueOf(index));
         scanner.nextLine(); // Critical: Consume the leftover newline character!
 
         System.out.println("\nSelected Expression: " + EXPRESSIONS[index] + "\n");
@@ -383,7 +384,7 @@ public class ParserNGWars {
                     .measurementTime(TimeValue.milliseconds(500))
                     .forks(2)
                     .addProfiler(org.openjdk.jmh.profile.GCProfiler.class)
-                    .jvmArgs("-Xms2g", "-Xmx2g")
+                    .jvmArgs("-Xms2g", "-Xmx2g", "-Dbenchmark.index=" + index)
                     .build();
 
             new Runner(configurations).run();

@@ -1,19 +1,9 @@
 package com.github.gbenroscience.parser.wars.individual;
 
 import com.github.gbenroscience.parser.MathExpression;
-import com.github.gbenroscience.parser.turbo.tools.FastCompositeExpression;
-import com.github.gbenroscience.parser.turbo.tools.ScalarTurboEvaluator;
-import java.util.concurrent.TimeUnit;
-import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.infra.Blackhole;
-import org.openjdk.jmh.runner.Runner;
-import org.openjdk.jmh.runner.RunnerException;
-import org.openjdk.jmh.runner.options.Options;
-import org.openjdk.jmh.runner.options.OptionsBuilder;
-import org.openjdk.jmh.runner.options.TimeValue;
 import parsii.eval.Parser;
 import parsii.eval.Variable;
 import parsii.tokenizer.ParseException;
@@ -50,7 +40,7 @@ public class Parsii extends ParserNGWars{
             System.getLogger(Parsii.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
     } 
-    
+        // === Parsii Benchmark ===
     @org.openjdk.jmh.annotations.Benchmark
     public void parsii(Blackhole blackhole) {
         generateInputs();

@@ -3,7 +3,6 @@ package com.github.gbenroscience.parser.wars.individual;
 import com.github.gbenroscience.parser.MathExpression;
 import com.github.gbenroscience.parser.turbo.tools.FastCompositeExpression;
 import com.github.gbenroscience.parser.turbo.tools.ScalarTurboEvaluator;
-import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.infra.Blackhole;
@@ -38,7 +37,7 @@ public class ParserNGTurboWideningBased extends ParserNGWars{
     }
  
  
-
+    // === ParserNG-Turob-Widening Benchmark ===
     @org.openjdk.jmh.annotations.Benchmark
     public void parserNgTurboWideningBased(Blackhole blackhole) {
         generateInputs(); 

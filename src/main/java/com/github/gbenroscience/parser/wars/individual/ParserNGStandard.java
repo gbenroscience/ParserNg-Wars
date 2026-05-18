@@ -26,7 +26,7 @@ public class ParserNGStandard extends ParserNGWars{
        
     }
 
-    // === ParserNG Benchmark ===
+    // === ParserNG Standard Benchmark ===
     @org.openjdk.jmh.annotations.Benchmark
     public void parserNg(Blackhole blackhole) {
         generateInputs(); 

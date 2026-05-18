@@ -22,7 +22,7 @@ public class NativeJava extends ParserNGWars{
         initRandomData();
         MathExpression.setAutoInitOn(true); 
     } 
-  
+     // === Native Java Benchmark ===
        @Benchmark
     public void nativeJava(Blackhole bh) {
          generateInputs();

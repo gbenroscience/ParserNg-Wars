@@ -15,6 +15,19 @@ To run this benchmark by yourself, run the class:
 com.github.gbenroscience.parser.wars.individual.ParserNGWars
 ```
 
+You may:
+
+- Right click to run the file, especially if you are in netbeans
+- Then -
+  <ol type="a"><li>Run mvn clean package (to build it)</li>
+  <li>java -cp target/benchmarks.jar com.github.gbenroscience.parser.wars.individual.ParserNGWars (to run it)</li>
+</ol>
+
+Also if you open the project in an IDE, you may run it with:
+
+`mvn exec:java -Dexec.mainClass="com.github.gbenroscience.parser.wars.individual.ParserNGWars"`
+
+
 This class is a simple, interactive terminal application which will run the benchmark in a competitive mode.
 
 

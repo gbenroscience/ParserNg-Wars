@@ -22,7 +22,7 @@ public class Baseline extends ParserNGWars{
     }
 
     
-
+   // ===Cost of variable setup per iteration Benchmark ===
     @Benchmark
     public void baseline(Blackhole blackhole) {
         generateInputs(); // Measures just the overhead of creating the 30 variables

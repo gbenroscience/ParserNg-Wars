@@ -43,7 +43,7 @@ public class Paralithic extends ParserNGWars{
 
     
 
-    // === Janino Benchmark ===
+    // === Paralithic Benchmark ===
     @org.openjdk.jmh.annotations.Benchmark
     public void paralithic(Blackhole blackhole) {
           generateInputs();

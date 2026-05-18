@@ -5,7 +5,6 @@ import static com.github.gbenroscience.parser.wars.individual.ParserNGWars.*;
 import java.lang.reflect.InvocationTargetException;
 import org.codehaus.commons.compiler.CompileException;
 import org.codehaus.janino.ExpressionEvaluator;
-import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.infra.Blackhole;
@@ -30,7 +29,7 @@ public class BaseJanino extends ParserNGWars{
     }
 
   
-
+   // ===Janino(base) Benchmark ===
     @org.openjdk.jmh.annotations.Benchmark
     public void normalJanino(Blackhole blackhole) {
         generateObjectInputs();
