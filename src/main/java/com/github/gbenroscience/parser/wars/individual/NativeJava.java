@@ -75,12 +75,15 @@ public class NativeJava extends ParserNGWars{
        @Benchmark
     public void nativeJava(Blackhole bh) {
          generateInputs();
-        double x1 = xValues[0];
-        double x2 = xValues[1];
-        
-        double result = Math.sin(Math.sqrt(x1 * x1 + x2 * x2));
+        double result = BenchmarkExpressions.STATEMENTS[index].apply(xValues);
         bh.consume(result);
     }
+    
+    
+ 
+    
+    
+    
 
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()

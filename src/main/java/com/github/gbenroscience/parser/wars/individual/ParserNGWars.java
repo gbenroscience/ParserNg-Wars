@@ -2,6 +2,7 @@ package com.github.gbenroscience.parser.wars.individual;
 
 import com.github.gbenroscience.parser.MathExpression;
 import com.github.gbenroscience.parser.turbo.tools.FastCompositeExpression;
+import com.github.gbenroscience.parser.wars.MathToJaninoConverter;
 import com.github.gbenroscience.parser.wars.Stats;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -15,12 +16,12 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Threads;
 import org.openjdk.jmh.annotations.Warmup;
 
+import java.util.function.ToDoubleFunction;
+
 /**
  * JMH Benchmark comparing ParserNG, Exp4J, and JavaMEP. Focus: repeated
  * evaluation of the same pre-compiled expression.
  */
-
-
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
@@ -29,12 +30,11 @@ import org.openjdk.jmh.annotations.Warmup;
 @Fork(value = 1, warmups = 1)
 @Threads(1)
 public class ParserNGWars {
-    
-       
+
     // Pre-compiled instances (initialized in @Setup)
     protected MathExpression parserNG;
     protected FastCompositeExpression arrayBasedTurbo;
-    protected FastCompositeExpression wideningBasedTurbo; 
+    protected FastCompositeExpression wideningBasedTurbo;
 
     // The expression to benchmark
     public static final String[] EXPRESSIONS = {
@@ -77,8 +77,10 @@ public class ParserNGWars {
         "x1^3+x2^3+x3^3+x4^3+x5^3+x6^3",
         "sin(sqrt(x1^2+x2^2+x3^2))"
     };
+ 
 
-    static int index = EXPRESSIONS.length - 1;
+    static int index = 20;//EXPRESSIONS.length - 3;
+
     public static final String[] getVars(String e) {
         return new MathExpression(e).getVariablesNames();
     }
@@ -94,9 +96,9 @@ public class ParserNGWars {
     protected static final int NUM_VARS = expressionVars.length;
     protected final double[] xValues = new double[NUM_VARS];
     protected final Object[] janinoArgs = new Object[NUM_VARS];
-    
+
     static {
-        System.out.println("EXPRESSION: "+EXPRESSION);
+        System.out.println("EXPRESSION: " + EXPRESSION);
     }
 
     public static interface JaninoMathFunction {
@@ -127,11 +129,10 @@ public class ParserNGWars {
         }
         // You can fine-tune the offsets to better match your original values if needed
     }
-    
-    protected void initRandomData(){
+
+    protected void initRandomData() {
         this.randomData = Stats.splitLongIntoDigits(System.currentTimeMillis());
     }
-
 
     public static final String getExpression() {
         return EXPRESSIONS[index];
@@ -178,6 +179,56 @@ public class ParserNGWars {
             36====x1^3+x2^3+x3^3+x4^3+x5^3+x6^3
             37====sin(sqrt(x1^2+x2^2+x3^2))
             """;
+
+    protected static final class BenchmarkExpressions {
+
+        @FunctionalInterface
+        public interface Eval {
+
+            double apply(double[] x);
+        }
+
+        public static final Eval[] STATEMENTS = new Eval[]{
+            /* 0 */x -> Math.pow((Math.sin(3) + Math.cos(4 - Math.sin(2))), (-2)),
+            /* 1 */ x -> Math.sin(3) + Math.cos(5) - Math.pow(2.718281828459045, 2),
+            /* 2 */ x -> Math.pow(((12 + 5) * 3 - Math.pow(2, 3) - 13 / 12.23), 3.2),
+            /* 3 */ x -> 5 * Math.sin(3 + 2) / (4 * 3 - 2),
+            /* 4 */ x -> (1 + 1) * (1 + 2) * (3 + 4) * (8 + 9) * (6 - 1) * (Math.pow(4, 3.14159265357)) - Math.pow((3 + 2), 1.8),
+            /* 5 */ x -> (Math.sin(8 + Math.cos(3)) + 2 + ((27 - 5) / (Math.pow(8, 3)) * (3.14159 * Math.pow(4, (14 - 10))) + Math.sin(-3.141) + (0 % 4)) * 4 / 3 * 3 / Math.sqrt(4)) + 12,
+            /* 6 */ x -> ((Math.pow(x[0], 2) + Math.sin(x[0])) / (1 + Math.cos(Math.pow(x[0], 2)))) * (Math.exp(x[0]) / 10),
+            /* 7 */ x -> ((Math.pow(x[0], 2) + 3 * Math.sin(x[0] + Math.pow(5, 3) - 1 / 4)) / (23 / 33 + Math.cos(Math.pow(x[0], 2)))) * (Math.exp(x[0]) / 10),
+            /* 8 */ x -> Math.exp(5 * 4 * 3 * 2 * 1),
+            /* 9 */ x -> 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10 + 11 + 12 + 13 + 14 + 15 + 16 + 17 + 18 + 19 + 20,
+            /* 10 */ x -> 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10 + 11 + 12 + 13 + 14 + 15 + 16 + 17 + 18 + 19 + 20 + Math.sin(x[0]),
+            /* 11 */ x -> 2 + 3 * 4 - 5 / 2 + Math.sin(0) + Math.cos(0) + Math.sqrt(16),
+            /* 12 */ x -> Math.sin(7 * x[0] + x[1]) + Math.cos(7 * x[0] - x[1]) - Math.sin(4) + Math.cos(Math.pow(5, 6)),
+            /* 13 */ x -> ((Math.pow(x[0], 2) + 3 * Math.sin(x[0] + Math.pow(5, 3) - 1 / 4)) / (23 / 33 + Math.cos(Math.pow(x[0], 2)))) * (Math.exp(x[0]) / 10) + Math.pow((Math.sin(3) + Math.cos(4 - Math.sin(2))), (-2)),
+            /* 14 */ x -> Math.pow((Math.pow(x[0], 2) + Math.pow(x[1], 0.5)), 4.2),
+            /* 15 */ x -> Math.sin(Math.pow(x[0], 3) + Math.pow(x[1], 3)) - 4 * (x[0] - x[1]),
+            /* 16 */ x -> Math.pow((x[0] + x[1] + x[2]), 0) + Math.pow((x[0] + x[1] + x[2]), 1) + Math.pow((x[0] + x[1] + x[2]), 2) + Math.pow((x[0] + x[1] + x[2]), 3) + Math.pow((x[0] + x[1] + x[2]), 4) + Math.pow((x[0] + x[1] + x[2]), 5) + Math.pow((x[0] + x[1] + x[2]), 6) + Math.pow((x[0] + x[1] + x[2]), 7),
+            /* 17 */ x -> ((Math.pow(x[0], 2) + 3 * Math.sin(x[0] + Math.pow(5, 3) - 1 / 4 + 5 * x[1])) / (23 / 33 + Math.cos(Math.pow(x[0], 2)))) * (Math.exp(x[0] + 2 * Math.pow(x[2], 2)) / 10),
+            /* 18 */ x -> Math.sin(x[0]) + 3 * Math.cos(x[0]) - 4 * Math.pow(x[0], 2) - 8 * Math.pow(x[0], 3) + 9 / (x[0] + 1) + 5 * Math.pow((x[0] - 1), 3) + 12 * x[1],
+            /* 19 */ x -> Math.sin(Math.pow((x[0] + x[1] + x[2]), 3.14)),
+            /* 20 */ x -> x[0] + x[1] + x[2],
+            /* 21 */ x -> x[0] + x[1] + x[2] + Math.sin(2) - Math.cos(4) + Math.exp(Math.pow(2, 5)),
+            /* 22 */ x -> (x[0] + x[1] + x[2]) / (x[0] - x[1] + x[2]),
+            /* 23 */ x -> Math.pow(Math.sin((x[0] + x[1] + x[2]) / (x[0] - x[1] + x[2])), 3.14159265357),
+            /* 24 */ x -> Math.sin(x[0]) + Math.sin(x[1]) + Math.sin(x[2]) - Math.sin(x[0] + 1) - Math.sin(x[0] - 1.1) - Math.sin(x[1] - 1) - Math.sin(x[1] - 1.1) + Math.sin(x[2] + 1) + Math.sin(x[2] + 2) + Math.sin(x[2] + 3 * x[0] * x[1] * x[2]),
+            /* 25 */ x -> Math.sin(x[0]) + Math.sin(x[1]) + Math.sin(x[2]) - Math.sin(x[0] + 1) - Math.sin(x[0] - 1.1) - Math.sin(x[1] - 1) - Math.sin(x[1] - 1.1) + Math.sin(x[2] + 1) + Math.sin(x[2] + 2) + Math.sin(x[2] + 3 * x[0] * x[1] * x[2]) + Math.sin(x[0]) + Math.sin(x[1]) + Math.sin(x[2]) - Math.sin(x[0] + 1) - Math.sin(x[0] - 1.1) - Math.sin(x[1] - 1) - Math.sin(x[1] - 1.1) + Math.sin(x[2] + 1) + Math.sin(x[2] + 2) + Math.sin(x[2] + 3 * x[0] * x[1] * x[2]),
+            /* 26 */ x -> Math.cos(x[0] + x[1] - 5 * x[2] - x[3] - 2 * x[4]) + Math.sin(2 * x[0] + 4 * x[1] - 5 * x[2] - x[3] - 2 * x[4]),
+            /* 27 */ x -> Math.cos(12 * x[0] + 3 * x[1] - 4 * x[2] + 5 * x[3] - x[4] - 4 * x[5] + 2 * x[6] + x[7] - 5 * x[8] - x[9] - 2 * x[10]) + Math.sin(2 * x[6] + 4 * x[7] - 5 * Math.pow(x[8], 2) - 3 * x[9] - 2 * x[10]) + Math.sin(x[8] + x[9] - x[6]) + Math.cos(x[0] + x[1] + x[2]) + 12 * x[3],
+            /* 28 */ x -> Math.sin(12 * x[0] + 3 * x[1] - 4 * x[2] + 5 * x[3] - x[4] - 4 * x[5] + 2 * x[6] + x[7] - 5 * x[8] - x[9] - 2 * x[10]) + Math.sin(2) - Math.cos(3) + Math.tan(1.5) - Math.sinh(4.22) + Math.cos(4.15),
+            /* 29 */ x -> (12 * x[0] + 3 * x[1] - 4 * x[2] + 5 * x[3] - x[4] - 4 * x[5] + 2 * x[6] + x[7] - 5 * x[8] - x[9] - 2 * x[10]),
+            /* 30 */ x -> (Math.pow(x[0], 2) / Math.sin(2 * 3.14159265357 / x[1])) - x[0] / 2,
+            /* 31 */ x -> (Math.cos(1 + Math.exp(x[0])) / Math.sqrt(Math.pow(Math.sin(x[0]), 2) - Math.pow(Math.cos(x[0]), 2))) + Math.atan(x[0]),
+            /* 32 */ x -> Math.pow(x[0], 3) + Math.pow(x[1], 3) + Math.pow(x[2], 3) + Math.pow(x[3], 3),
+            /* 33 */ x -> Math.pow(x[0], 3.21) + Math.pow(x[1], 3.14) + Math.pow(x[2], 3) + Math.pow(x[3], 3) + Math.pow(x[4], 3) + Math.pow(x[5], 3),
+            /* 34 */ x -> (Math.sin(Math.pow(x[0], 3)) - Math.cos(Math.pow(x[0], 4)) + Math.tan(Math.pow(x[0], 0.5))) / (2 * Math.pow(x[0], 2) + 1),
+            /* 35 */ x -> (Math.sin(x[0]) + 2 + ((7 - 5) * (3.14159 * Math.pow(x[0], (14 - 10))) + Math.sin(-3.141) + (0 % x[0])) * x[0] / 3 * 3 / Math.sqrt(x[0] + 12)),
+            /* 36 */ x -> Math.pow(x[0], 3) + Math.pow(x[1], 3) + Math.pow(x[2], 3) + Math.pow(x[3], 3) + Math.pow(x[4], 3) + Math.pow(x[5], 3),
+            /* 37 */ x -> Math.sin(Math.sqrt(Math.pow(x[0], 2) + Math.pow(x[1], 2) + Math.pow(x[2], 2)))
+        };
+    }
 
     public static final StringBuilder EXPR_MAP = new StringBuilder();
 

@@ -1,7 +1,6 @@
 package com.github.gbenroscience.parser.wars.individual;
 
 import com.github.gbenroscience.parser.MathExpression;
-import com.github.gbenroscience.parser.turbo.tools.FastCompositeExpression;
 import com.github.gbenroscience.parser.turbo.tools.ScalarTurboEvaluator;
 import com.github.gbenroscience.parser.wars.MathToJaninoConverter;
 import java.util.concurrent.TimeUnit;
