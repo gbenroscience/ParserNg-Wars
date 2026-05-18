@@ -25,43 +25,37 @@ import parsii.tokenizer.ParseException;
  * java -jar target/benchmarks.jar ".*Parsii.*"
  * @author GBEMIRO
  */
-public class Parsii extends ParserNGWars{
-
-   
+public class ParserNGTurboArrayBased extends ParserNGWars{
+ 
+    
+    
     // Pre-compiled instances (initialized in @Setup) 
-    private parsii.eval.Expression express;
-    parsii.eval.Variable[] parsiiVars = new parsii.eval.Variable[expressionVars.length];
+    protected FastCompositeExpression arrayBasedTurbo; 
   
 
     @Setup(Level.Trial)
     public void setup() {
         initRandomData();
         MathExpression.setAutoInitOn(true);
- 
-
-        parsii.eval.Scope scope = new parsii.eval.Scope();
-        for (int i = 0; i < parsiiVars.length; i++) {
-            parsiiVars[i] = scope.create(expressionVars[i]);
-        }
+        // ParserNG - compile once
+        parserNG = new MathExpression(EXPRESSION, true); 
 
         try {
-            express = Parser.parse(EXPRESSION, scope);
-        } catch (ParseException ex) {
-            System.getLogger(Parsii.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            arrayBasedTurbo = new ScalarTurboEvaluator(parserNG, false).compile(); 
+        } catch (Throwable ex) {
+            System.getLogger(ParserNGTurboArrayBased.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
-    } 
-    
-    @org.openjdk.jmh.annotations.Benchmark
-    public void parsii(Blackhole blackhole) {
-        generateInputs();
-        int i = 0;
-        for (Variable v : parsiiVars) {
-            v.setValue(xValues[i++]);
-        }
-        double result = express.evaluate();
-        blackhole.consume(result);
+ 
     }
  
+
+    // === ParserNG Benchmark ===
+    @org.openjdk.jmh.annotations.Benchmark
+    public void parserNgTurboArrayBased(Blackhole blackhole) {
+        generateInputs(); 
+        double result = arrayBasedTurbo.applyScalar(xValues);
+        blackhole.consume(result);
+    } 
  
 
 }

@@ -4,6 +4,8 @@ import com.github.gbenroscience.parser.MathExpression;
 import com.github.gbenroscience.parser.turbo.tools.FastCompositeExpression;
 import com.github.gbenroscience.parser.wars.MathToJaninoConverter;
 import com.github.gbenroscience.parser.wars.Stats;
+import java.util.Arrays;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -17,6 +19,11 @@ import org.openjdk.jmh.annotations.Threads;
 import org.openjdk.jmh.annotations.Warmup;
 
 import java.util.function.ToDoubleFunction;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
+import org.openjdk.jmh.runner.options.TimeValue;
 
 /**
  * JMH Benchmark comparing ParserNG, Exp4J, and JavaMEP. Focus: repeated
@@ -33,8 +40,6 @@ public class ParserNGWars {
 
     // Pre-compiled instances (initialized in @Setup)
     protected MathExpression parserNG;
-    protected FastCompositeExpression arrayBasedTurbo;
-    protected FastCompositeExpression wideningBasedTurbo;
 
     // The expression to benchmark
     public static final String[] EXPRESSIONS = {
@@ -77,9 +82,8 @@ public class ParserNGWars {
         "x1^3+x2^3+x3^3+x4^3+x5^3+x6^3",
         "sin(sqrt(x1^2+x2^2+x3^2))"
     };
- 
 
-    static int index = 20;//EXPRESSIONS.length - 3;
+    static int index = 23;//EXPRESSIONS.length - 3;
 
     public static final String[] getVars(String e) {
         return new MathExpression(e).getVariablesNames();
@@ -248,7 +252,121 @@ public class ParserNGWars {
      *
      * @param args
      */
-    public static void main1(String[] args) {//
+    public static void main(String[] args) {
+        
+        System.out.println("Welcome to the Math Parser Benchmarks, aka ParserNG Wars.\n");
+        System.out.println("HERE ARE THE AVAILABLE EXPRESSIONS, You may select one of them by the index:\n\n"+EXPRESSIONS_MAP);
+        
+        System.out.println("Choose an expression by typing the number before it\n");
+        index = new Scanner(System.in).nextInt();
+        if(index >= EXPRESSIONS.length){
+            System.err.println("Invalid expression selected. Choose an index between 0 and "+EXPRESSIONS.length);
+            return;
+        }
+        
+        System.out.println("\n\nBenchmark Expression: "+EXPRESSIONS[index]+"\n\n");
+        
+        StringBuilder sb = new StringBuilder("Native Java - 0\n");
+        sb.append("FieryJanino - 1\n");
+        sb.append("BaseJanino - 2\n");
+        sb.append("Paralithic - 3\n");
+        sb.append("mXParser - 4\n");
+        sb.append("exp4J - 5\n");
+        sb.append("Parsii - 6\n");
+        sb.append("ParserNG-Standard - 7\n");
+        sb.append("ParserNG-Turbo(Array-Based) - 8\n");
+        sb.append("ParserNG-Turbo(Widening-Args-Based) - 9\n");
+        System.out.println(sb.toString());
+
+        
+        System.out.println("Welcome to the Math Parser Benchmarks, aka ParserNG Wars.\nEnter a comma separated list of the digits for the Math Parsers You want to Benchmark.");
+        Scanner sc = new Scanner(System.in);
+
+        String digitsCommand = sc.next();
+        if (digitsCommand != null && !digitsCommand.trim().isEmpty()) {
+            String[] digitsTextArray = digitsCommand.split(",");
+            int[] digits = new int[digitsTextArray.length];
+            try {
+                for (int i = 0; i < digitsTextArray.length; i++) {
+                    digits[i] = Integer.parseInt(digitsTextArray[i]);
+                }
+                OptionsBuilder opt = new OptionsBuilder();
+                opt.include(Baseline.class.getSimpleName());
+                StringBuilder versusBuilder = new StringBuilder();
+                for (int i = 0; i < digitsTextArray.length; i++) {
+                    switch (digits[i]) {
+                        case 0:
+                            opt.include(NativeJava.class.getSimpleName());
+                            versusBuilder.append("NativeJava vs");
+                            break;
+                        case 1:
+                            opt.include(FieryJanino.class.getSimpleName());
+                            versusBuilder.append("FieryJanino vs");
+                            break;
+                        case 2:
+                            opt.include(BaseJanino.class.getSimpleName());
+                            versusBuilder.append("BaseJanino vs");
+                            break;
+                        case 3:
+                            opt.include(Paralithic.class.getSimpleName());
+                            versusBuilder.append("Paralithic vs");
+                            break;
+                        case 4:
+                            opt.include(MxParser.class.getSimpleName());
+                            versusBuilder.append("MxParser vs");
+                            break;
+                        case 5:
+                            opt.include(Exp4J.class.getSimpleName());
+                            versusBuilder.append("Exp4J vs");
+                            break;
+                        case 6:
+                            opt.include(Parsii.class.getSimpleName());
+                            versusBuilder.append("Parsii vs");
+                            break;
+                        case 7:
+                            opt.include(ParserNGStandard.class.getSimpleName());
+                            versusBuilder.append("ParserNG-Standard vs");
+                            break;
+                        case 8:
+                            opt.include(ParserNGTurboArrayBased.class.getSimpleName());
+                            versusBuilder.append("ParserNG-Turbo-Array-Based vs");
+                            break;
+                        case 9:
+                            opt.include(ParserNGTurboWideningBased.class.getSimpleName());
+                            versusBuilder.append("ParserNG-Turbo-Widening-Args-Based vs");
+                            break;
+                        default:
+                            throw new AssertionError();
+                    }
+                }
+                String st = versusBuilder.toString();
+                String versus = st.substring(0, st.length() - 3);
+                System.out.println(versus+"\n\nLET THE GAMES BEGIN!\n\n");
+                
+                opt = (OptionsBuilder) opt.mode(Mode.AverageTime)
+                        .timeUnit(TimeUnit.NANOSECONDS)
+                        .warmupIterations(5)
+                        .warmupTime(TimeValue.milliseconds(200L))
+                        .measurementIterations(5)
+                        .measurementTime(TimeValue.milliseconds(500))
+                        .forks(2)
+                        .addProfiler(org.openjdk.jmh.profile.GCProfiler.class)
+                        .jvmArgs("-Xms2g", "-Xmx2g") // tune heap if needed
+                        .build();
+                new Runner(opt).run();
+
+            } catch (NumberFormatException e) {
+                System.err.println("An error exists in your digits entry. Please try again.");
+                e.printStackTrace();
+                System.out.println(sb.toString());
+            } catch (RunnerException ex) {
+                System.getLogger(ParserNGWars.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
+        }
+
+    }
+
+    public static void main2(String[] args) {//
         System.out.println(EXPR_MAP);
     }
 

@@ -40,13 +40,7 @@ public class FieryJanino extends ParserNGWars{
         MathExpression.setAutoInitOn(true);
         // ParserNG - compile once
         parserNG = new MathExpression(EXPRESSION, true);
-
-        try {
-            arrayBasedTurbo = new ScalarTurboEvaluator(parserNG, false).compile();
-            wideningBasedTurbo = new ScalarTurboEvaluator(parserNG, true).compile();
-        } catch (Throwable ex) {
-            System.getLogger(FieryJanino.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-        }
+ 
         setupJanino();
     }
 
@@ -57,23 +51,7 @@ public class FieryJanino extends ParserNGWars{
         double result = parserNG.solveGeneric(xValues).scalar;
         blackhole.consume(result);
     }
-
-    // === ParserNG Benchmark ===
-    @org.openjdk.jmh.annotations.Benchmark
-    public void parserNgTurboArrayBased(Blackhole blackhole) {
-        generateInputs();
-        // turboArgs = xValues;
-        double result = arrayBasedTurbo.applyScalar(xValues);//assume the xValues lines up with the turboArgs
-        blackhole.consume(result);
-    }
-
-    @org.openjdk.jmh.annotations.Benchmark
-    public void parserNgTurboWideningBased(Blackhole blackhole) {
-        generateInputs();
-        // turboArgs = xValues;
-        double result = wideningBasedTurbo.applyScalar(xValues);//assume the xValues lines up with the turboArgs
-        blackhole.consume(result);
-    }
+ 
 
     // === Janino Benchmark ===
     @org.openjdk.jmh.annotations.Benchmark
@@ -81,14 +59,7 @@ public class FieryJanino extends ParserNGWars{
         generateInputs();
         double result = fastEvaluator.apply(xValues);
         blackhole.consume(result);
-    }
-
-    @Benchmark
-    public void baseline(Blackhole blackhole) {
-        generateInputs(); // Measures just the overhead of creating the 30 variables
-        blackhole.consume(xValues.length == 0 ? 0.0 : xValues[0]);
-    }
-
+    } 
 
 
     private void setupJanino() {
@@ -119,21 +90,6 @@ public class FieryJanino extends ParserNGWars{
         }
     }
 
-    public static void main(String[] args) throws RunnerException {
-        Options opt = new OptionsBuilder()
-                .include(FieryJanino.class.getSimpleName())
-                .mode(Mode.AverageTime)
-                .timeUnit(TimeUnit.NANOSECONDS)
-                .warmupIterations(5)
-                .warmupTime(TimeValue.milliseconds(200L))
-                .measurementIterations(5)
-                .measurementTime(TimeValue.milliseconds(500))
-                .forks(2)
-                .addProfiler(org.openjdk.jmh.profile.GCProfiler.class)
-                .jvmArgs("-Xms2g", "-Xmx2g") // tune heap if needed
-                .build();
-
-        new Runner(opt).run();
-    }
+   
 
 }

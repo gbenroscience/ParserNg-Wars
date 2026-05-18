@@ -33,16 +33,7 @@ public class Exp4J extends ParserNGWars{
     @Setup(Level.Trial)
     public void setup() {
         initRandomData();
-        MathExpression.setAutoInitOn(true);
-        // ParserNG - compile once
-
-        parserNG = new MathExpression(EXPRESSION, true);
-        try {
-            arrayBasedTurbo = new ScalarTurboEvaluator(parserNG, false).compile();
-            wideningBasedTurbo = new ScalarTurboEvaluator(parserNG, true).compile();
-        } catch (Throwable ex) {
-            System.getLogger(Exp4J.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-        }
+       
 
         ExpressionBuilder builder = new ExpressionBuilder(EXPRESSION);
         for (int i = 0; i < NUM_VARS; i++) {
@@ -50,36 +41,7 @@ public class Exp4J extends ParserNGWars{
         }
         exp4j = builder.build();
     }
-
-    // === ParserNG Benchmark ===
-    @org.openjdk.jmh.annotations.Benchmark
-    public void parserNg(Blackhole blackhole) {
-        generateInputs(); 
-        double result = parserNG.solveGeneric(xValues).scalar;
-        blackhole.consume(result);
-    }
-
-    // === ParserNG Benchmark ===
-    @org.openjdk.jmh.annotations.Benchmark
-    public void parserNgTurboArrayBased(Blackhole blackhole) {
-        generateInputs(); 
-        double result = arrayBasedTurbo.applyScalar(xValues);
-        blackhole.consume(result);
-    }
-
-    @org.openjdk.jmh.annotations.Benchmark
-    public void parserNgTurboWideningBased(Blackhole blackhole) {
-        generateInputs();
-        double result = wideningBasedTurbo.applyScalar(xValues);
-        blackhole.consume(result);
-    }
-
-    @Benchmark
-    public void baseline(Blackhole blackhole) {
-        generateInputs(); // Measures just the overhead of creating the 30 variables
-        blackhole.consume(xValues.length == 0 ? 0.0 : xValues[0]);   
-    }
-
+ 
     @org.openjdk.jmh.annotations.Benchmark
     public void exp4j(Blackhole blackhole) {
         generateInputs();
@@ -89,23 +51,7 @@ public class Exp4J extends ParserNGWars{
         double result = exp4j.evaluate();
         blackhole.consume(result);
     }
-
-    public static void main(String[] args) throws RunnerException {
-        Options opt = new OptionsBuilder()
-                .include(Exp4J.class.getSimpleName())
-                .mode(Mode.AverageTime)
-                .timeUnit(TimeUnit.NANOSECONDS)
-                .warmupIterations(5)
-                .warmupTime(TimeValue.milliseconds(200L))
-                .measurementIterations(5)
-                .measurementTime(TimeValue.milliseconds(500))
-                .forks(2)
-                .addProfiler(org.openjdk.jmh.profile.GCProfiler.class)
-                .jvmArgs("-Xms2g", "-Xmx2g") // tune heap if needed
-                .build();
-
-        new Runner(opt).run();
-    }
+ 
  
 
 }
