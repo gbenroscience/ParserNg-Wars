@@ -41,33 +41,36 @@ public class FieryJanino extends ParserNGWars{
     } 
 
 
-    private void setupJanino() {
-        // Convert ParserNG syntax to Java syntax
-        String javaExpr = MathToJaninoConverter.convert(EXPRESSION);
-        int i = 0;
-        for (String s : expressionVars) {
-            javaExpr = javaExpr.replace(s, "v[" + i + "]");
-            i++;
-        }
-
-        String classBody = String.format("""
-            @Override
-            public double apply(double[] v) {
-                return %s;
-            }
-            """, javaExpr);
-        //System.out.println("Janino-Expr = " + javaExpr);
-
-        try {
-            org.codehaus.janino.ClassBodyEvaluator cbe = new org.codehaus.janino.ClassBodyEvaluator();
-            cbe.setImplementedInterfaces(new Class[]{ParserNGWars.JaninoMathFunction.class});
-            cbe.cook(classBody);
-            this.fastEvaluator = (ParserNGWars.JaninoMathFunction) cbe.getClazz()
-                    .getDeclaredConstructor().newInstance();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+  private void setupJanino() {
+    // Convert ParserNG syntax to Java syntax
+    String javaExpr = MathToJaninoConverter.convert(EXPRESSION);
+    
+    // Use an index loop to cleanly target array tracking positions
+    for (int i = 0; i < expressionVars.length; i++) {
+        String varName = expressionVars[i];
+        // \b ensures we match exact variable tokens (e.g., matching "x1" but ignoring "x10")
+        String regex = "\\b" + java.util.regex.Pattern.quote(varName) + "\\b";
+        javaExpr = javaExpr.replaceAll(regex, "v[" + i + "]");
     }
+
+    String classBody = String.format("""
+        @Override
+        public double apply(double[] v) {
+            return %s;
+        }
+        """, javaExpr);
+
+    try {
+        org.codehaus.janino.ClassBodyEvaluator cbe = new org.codehaus.janino.ClassBodyEvaluator();
+        cbe.setImplementedInterfaces(new Class[]{ParserNGWars.JaninoMathFunction.class});
+        cbe.cook(classBody);
+        this.fastEvaluator = (ParserNGWars.JaninoMathFunction) cbe.getClazz()
+                .getDeclaredConstructor().newInstance();
+    } catch (Exception ex) {
+        // Rethrowing as RuntimeException prevents JMH from continuing silently with null states
+        throw new RuntimeException("Failed to compile Janino function body expressions", ex);
+    }
+}
 
    
 

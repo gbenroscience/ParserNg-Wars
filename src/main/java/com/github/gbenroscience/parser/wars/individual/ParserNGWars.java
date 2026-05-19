@@ -99,6 +99,7 @@ public class ParserNGWars {
 
     protected static final int NUM_VARS = expressionVars.length;
     protected final double[] xValues = new double[NUM_VARS];
+    protected final Double[] xValuesObj = new Double[NUM_VARS];
     protected final Object[] janinoArgs = new Object[NUM_VARS];
 
     static {
@@ -130,6 +131,18 @@ public class ParserNGWars {
         }
         for (int i = 1; i < NUM_VARS; i++) {
             janinoArgs[i] = base + (i % 2 == 0 ? 1.0 : -1.0) * (0.1 + (i % 10) * 0.1); // your original pattern
+        }
+        // You can fine-tune the offsets to better match your original values if needed
+    }
+
+    protected void generateDoubleInputs() {
+        double base = randomData[simpleCursor++ % randomData.length];
+        //double base = randomData[cursor.getAndIncrement() % randomData.length];
+        if (xValuesObj.length != 0) {
+            xValuesObj[0] = base;
+        }
+        for (int i = 1; i < NUM_VARS; i++) {
+            xValuesObj[i] = base + (i % 2 == 0 ? 1.0 : -1.0) * (0.1 + (i % 10) * 0.1); // your original pattern
         }
         // You can fine-tune the offsets to better match your original values if needed
     }
@@ -283,16 +296,17 @@ public class ParserNGWars {
         // 2. Build the Engines Menu
         String menu = """
         Select the Math Engines to benchmark (comma-separated digits):
-        [0] Native Java
-        [1] FieryJanino
-        [2] BaseJanino
-        [3] Paralithic
-        [4] mXParser
-        [5] exp4J
-        [6] Parsii
-        [7] ParserNG-Standard
-        [8] ParserNG-Turbo (Array-Based)
-        [9] ParserNG-Turbo (Widening-Args-Based)
+        [0]  Native Java
+        [1]  FieryJanino
+        [2]  BaseJanino
+        [3]  Paralithic
+        [4]  mXParser
+        [5]  exp4J
+        [6]  Parsii
+        [7]  ParserNG-Standard
+        [8]  ParserNG-Turbo (Array-Based)
+        [9]  ParserNG-Turbo (Widening-Args-Based)
+        [10] com.expression.parser(sbesada/JavaMEP)
         
         Enter engines (e.g., 0,3,8): """;
         System.out.print(menu);
@@ -359,6 +373,10 @@ public class ParserNGWars {
                     case 9 -> {
                         opt.include(ParserNGTurboWideningBased.class.getSimpleName());
                         versusBuilder.append("ParserNG-Turbo-Widening-Args-Based vs ");
+                    }
+                    case 10 -> {
+                        opt.include(ComExpressionParser.class.getSimpleName());
+                        versusBuilder.append("com.expression.parser(sbsesada/JavaMEP) vs ");
                     }
                     default ->
                         System.err.println("Warning: Code [" + engineChoice + "] is invalid and skipped.");
