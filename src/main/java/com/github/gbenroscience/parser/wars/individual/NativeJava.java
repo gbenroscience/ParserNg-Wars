@@ -1,9 +1,6 @@
 package com.github.gbenroscience.parser.wars.individual;
 
-import com.github.gbenroscience.parser.MathExpression; 
 import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.infra.Blackhole; 
  
 
@@ -17,11 +14,7 @@ import org.openjdk.jmh.infra.Blackhole;
 public class NativeJava extends ParserNGWars{
  
 
-    @Setup(Level.Trial)
-    public void setup() {
-        initRandomData();
-        MathExpression.setAutoInitOn(true); 
-    } 
+   
      // === Native Java Benchmark ===
        @Benchmark
     public void nativeJava(Blackhole bh) {

@@ -21,9 +21,7 @@ public class Exp4J extends ParserNGWars{
 
     @Setup(Level.Trial)
     public void setup() {
-        initRandomData();
-       
-
+        super.setup();
         ExpressionBuilder builder = new ExpressionBuilder(EXPRESSION);
         for (int i = 0; i < NUM_VARS; i++) {
             builder = builder.variable(expressionVars[i]);

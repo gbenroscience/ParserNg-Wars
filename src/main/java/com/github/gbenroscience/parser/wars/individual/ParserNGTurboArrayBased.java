@@ -24,8 +24,7 @@ public class ParserNGTurboArrayBased extends ParserNGWars{
 
     @Setup(Level.Trial)
     public void setup() {
-        initRandomData();
-        MathExpression.setAutoInitOn(true);
+        super.setup();
         // ParserNG - compile once
         parserNG = new MathExpression(EXPRESSION, true); 
 

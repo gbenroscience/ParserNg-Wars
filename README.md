@@ -4,7 +4,7 @@ This repository serves as the high-performance proving ground for **ParserNG**, 
 ---
 
 ## Run the code for yourself
-The codes for each benchmark  are located in
+The codes for each benchmark are located in
 ```Java
 package com.github.gbenroscience.parser.wars.individual;
 ```
@@ -30,7 +30,48 @@ Also if you open the project in an IDE, you may run it with:
 
 This class is a simple, interactive terminal application which will run the benchmark in a competitive mode.
 
+### Extending the functionality - adding your own parser to the benchmarks
+You may easily add benchmarks for other parsers(or your own parser) by
 
+- Creating the benchmark class inside the same package, i.e.
+the `com.github.gbenroscience.parser.wars.individual` package.
+
+- Make your benchmark class extend ParserNGWars.java. If it needs extra setup apart from the random data used to initialize it, then
+override the `setup` method in ParserNGWars.java in your own class. Make sure to call super.setup() as the first call in your own `setup` method.
+Then define the benchmarking method e.g:
+
+<br>
+
+```Java
+    // === Paralithic Benchmark ===
+    @org.openjdk.jmh.annotations.Benchmark
+    public void myparser(Blackhole blackhole) {
+          generateInputs();
+          blackhole.consume(this.expression.evaluate(xValues));
+    }
+```
+<b>NOTE:<br> 
+<i>Change the name of the method(`myparser` above) to your own choice and run its evaluation method e.g solve , apply, evaluate etc.</i>
+</b>
+
+When you run `ParserNGWars.java` next, your class will automatically be presented as one of the options, and you can select it.
+
+A simple example would  look like:
+
+```Java
+package com.github.gbenroscience.parser.wars.individual;
+
+import org.openjdk.jmh.infra.Blackhole;
+
+
+public class SimpleParserBenchmark extends ParserNGWars{
+      // === Paralithic Benchmark ===
+    @org.openjdk.jmh.annotations.Benchmark
+    public void spBenchmark(Blackhole blackhole) {
+          blackhole.consume(Math.PI*2); 
+    }
+}
+```
 
 ## 🛠 ️Meet The Combatants
 

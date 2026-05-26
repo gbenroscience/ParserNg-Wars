@@ -24,8 +24,7 @@ public class MxParser extends ParserNGWars{
 
     @Setup(Level.Trial)
     public void setup() {
-        initRandomData();
-        
+        super.setup();
         mxParser = new org.mariuszgromada.math.mxparser.Expression(EXPRESSION);
 
         for (int i = 0; i < NUM_VARS; i++) {

@@ -1,6 +1,5 @@
 package com.github.gbenroscience.parser.wars.individual;
 
-import com.github.gbenroscience.parser.MathExpression;
 import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.infra.Blackhole;
@@ -25,10 +24,7 @@ public class Parsii extends ParserNGWars{
 
     @Setup(Level.Trial)
     public void setup() {
-        initRandomData();
-        MathExpression.setAutoInitOn(true);
- 
-
+        super.setup();
         parsii.eval.Scope scope = new parsii.eval.Scope();
         for (int i = 0; i < parsiiVars.length; i++) {
             parsiiVars[i] = scope.create(expressionVars[i]);

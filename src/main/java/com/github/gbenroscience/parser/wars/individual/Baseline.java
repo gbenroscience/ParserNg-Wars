@@ -1,8 +1,6 @@
 package com.github.gbenroscience.parser.wars.individual;
 
 import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.infra.Blackhole;
 
 /**
@@ -14,12 +12,7 @@ import org.openjdk.jmh.infra.Blackhole;
  */
 public class Baseline extends ParserNGWars{
  
-
-    @Setup(Level.Trial)
-    public void setup() {
-        initRandomData();
-        
-    }
+ 
 
     
    // ===Cost of variable setup per iteration Benchmark ===

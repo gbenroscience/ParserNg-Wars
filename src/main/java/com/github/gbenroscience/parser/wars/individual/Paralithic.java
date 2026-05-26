@@ -1,6 +1,5 @@
 package com.github.gbenroscience.parser.wars.individual;
-
-import org.openjdk.jmh.annotations.Benchmark;
+ 
 import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.infra.Blackhole;
@@ -25,7 +24,7 @@ public class Paralithic extends ParserNGWars{
 
     @Setup(Level.Trial)
     public void setup() {
-        initRandomData();
+        super.setup();
         Parser parser = new Parser();
         com.dfsek.paralithic.eval.parser.Scope scope = new com.dfsek.paralithic.eval.parser.Scope();
         

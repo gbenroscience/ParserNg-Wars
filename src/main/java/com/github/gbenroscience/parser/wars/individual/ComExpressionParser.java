@@ -4,8 +4,6 @@ import com.expression.parser.util.ParserResult;
 import com.expression.parser.util.Point;
 import static com.github.gbenroscience.parser.wars.individual.ParserNGWars.NUM_VARS;
 import static com.github.gbenroscience.parser.wars.individual.ParserNGWars.expressionVars;
-import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.infra.Blackhole;
 
 /**
@@ -14,10 +12,8 @@ import org.openjdk.jmh.infra.Blackhole;
  */
 public class ComExpressionParser extends ParserNGWars {
     Point[] sbesadaPts = new Point[expressionVars.length];
-    @Setup(Level.Trial)
-    public void setup() {
-        initRandomData();
-    }
+   
+
 
     @Override
     protected void generateInputs() {

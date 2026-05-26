@@ -24,7 +24,7 @@ public class BaseJanino extends ParserNGWars{
 
     @Setup(Level.Trial)
     public void setup() {
-        initRandomData();
+        super.setup();
         setupNormalJanino();
     }
 
