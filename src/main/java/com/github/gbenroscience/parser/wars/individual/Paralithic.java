@@ -29,7 +29,6 @@ public class Paralithic extends ParserNGWars{
         Parser parser = new Parser();
         com.dfsek.paralithic.eval.parser.Scope scope = new com.dfsek.paralithic.eval.parser.Scope();
         
-        
         for (int i = 0; i < expressionVars.length; i++) {
             scope.addInvocationVariable(expressionVars[i]);
         }

@@ -28,11 +28,25 @@ public class BaseJanino extends ParserNGWars{
         setupNormalJanino();
     }
 
+    @Override
+    protected void generateInputs() {
+            double base = randomData[simpleCursor++ % randomData.length];
+        //double base = randomData[cursor.getAndIncrement() % randomData.length];
+        if (janinoArgs.length != 0) {
+            janinoArgs[0] = base;
+        }
+        for (int i = 1; i < NUM_VARS; i++) {
+            janinoArgs[i] = base + (i % 2 == 0 ? 1.0 : -1.0) * (0.1 + (i % 10) * 0.1);
+        }
+    }
+
+    
+    
   
    // ===Janino(base) Benchmark ===
     @org.openjdk.jmh.annotations.Benchmark
     public void normalJanino(Blackhole blackhole) {
-        generateObjectInputs();
+        generateInputs();
         try {
             blackhole.consume(expressEvaluator.evaluate(janinoArgs));
         } catch (InvocationTargetException ex) {

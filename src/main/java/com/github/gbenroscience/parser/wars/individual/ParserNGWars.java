@@ -2,9 +2,10 @@ package com.github.gbenroscience.parser.wars.individual;
 
 import com.github.gbenroscience.parser.MathExpression;
 import com.github.gbenroscience.parser.wars.Stats;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Measurement;
@@ -20,6 +21,8 @@ import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
+import org.reflections.Reflections;
+import org.reflections.scanners.Scanners;
 
 /**
  * JMH Benchmark comparing ParserNG, Exp4J, and JavaMEP. Focus: repeated
@@ -76,7 +79,10 @@ public class ParserNGWars {
         "(sin(x1^3)-cos(x1^4)+tan(x1^0.5))/(2*x1^2+1)",
         "(sin(x1) + 2 + ((7-5) * (3.14159 * x1^(14-10)) + sin(-3.141) + (0%x1)) * x1/3 * 3/sqrt(x1+12))",
         "x1^3+x2^3+x3^3+x4^3+x5^3+x6^3",
-        "sin(sqrt(x1^2+x2^2+x3^2))"
+        "sin(sqrt(x1^2+x2^2+x3^2))",
+        "x1/(1-x2)",
+        "x1*exp(-(x2/(1-((x3-x4)/x3))))",
+        "(1/(x1*sqrt(2*pi)))*exp((-(x2-x3)^2)/(2*x1^2))"
     };
 
     static int index = 23;//EXPRESSIONS.length - 3;
@@ -92,14 +98,14 @@ public class ParserNGWars {
 
     protected int[] randomData;
 
-    protected AtomicInteger cursor = new AtomicInteger();//
+    protected AtomicInteger cursor = new AtomicInteger();
 
     protected static final String EXPRESSION = ParserNGWars.getExpression();
     protected static final String[] expressionVars = ParserNGWars.getVars(EXPRESSION);
 
     protected static final int NUM_VARS = expressionVars.length;
     protected final double[] xValues = new double[NUM_VARS];
-    protected final Double[] xValuesObj = new Double[NUM_VARS];
+
     protected final Object[] janinoArgs = new Object[NUM_VARS];
 
     static {
@@ -113,38 +119,13 @@ public class ParserNGWars {
 
     protected void generateInputs() {
         double base = randomData[simpleCursor++ % randomData.length];
-        //double base = randomData[cursor.getAndIncrement() % randomData.length];
+        //double base = randomData[cursor.getAndIncrement() % randomData.length];//this is much slower!
         if (xValues.length != 0) {
             xValues[0] = base;
         }
         for (int i = 1; i < NUM_VARS; i++) {
             xValues[i] = base + (i % 2 == 0 ? 1.0 : -1.0) * (0.1 + (i % 10) * 0.1); // your original pattern
         }
-        // You can fine-tune the offsets to better match your original values if needed
-    }
-
-    protected void generateObjectInputs() {
-        double base = randomData[simpleCursor++ % randomData.length];
-        //double base = randomData[cursor.getAndIncrement() % randomData.length];
-        if (janinoArgs.length != 0) {
-            janinoArgs[0] = base;
-        }
-        for (int i = 1; i < NUM_VARS; i++) {
-            janinoArgs[i] = base + (i % 2 == 0 ? 1.0 : -1.0) * (0.1 + (i % 10) * 0.1); // your original pattern
-        }
-        // You can fine-tune the offsets to better match your original values if needed
-    }
-
-    protected void generateDoubleInputs() {
-        double base = randomData[simpleCursor++ % randomData.length];
-        //double base = randomData[cursor.getAndIncrement() % randomData.length];
-        if (xValuesObj.length != 0) {
-            xValuesObj[0] = base;
-        }
-        for (int i = 1; i < NUM_VARS; i++) {
-            xValuesObj[i] = base + (i % 2 == 0 ? 1.0 : -1.0) * (0.1 + (i % 10) * 0.1); // your original pattern
-        }
-        // You can fine-tune the offsets to better match your original values if needed
     }
 
     protected void initRandomData() {
@@ -194,7 +175,10 @@ public class ParserNGWars {
             34====(sin(x1^3)-cos(x1^4)+tan(x1^0.5))/(2*x1^2+1)
             35====(sin(x1) + 2 + ((7-5) * (3.14159 * x1^(14-10)) + sin(-3.141) + (0%x1)) * x1/3 * 3/sqrt(x1+12))
             36====x1^3+x2^3+x3^3+x4^3+x5^3+x6^3
-            37====sin(sqrt(x1^2+x2^2+x3^2))
+            37====sin(sqrt(x1^2+x2^2+x3^2))  
+            38====x1/(1-x2)  
+            39====x1*exp(-(x2/(1-((x3-x4)/x3)))) 
+            40====(1/(x1*sqrt(2*pi)))*exp((-(x2-x3)^2)/(2*x1^2))  
             """;
 
     protected static final class BenchmarkExpressions {
@@ -243,10 +227,17 @@ public class ParserNGWars {
             /* 34 */ x -> (Math.sin(Math.pow(x[0], 3)) - Math.cos(Math.pow(x[0], 4)) + Math.tan(Math.pow(x[0], 0.5))) / (2 * Math.pow(x[0], 2) + 1),
             /* 35 */ x -> (Math.sin(x[0]) + 2 + ((7 - 5) * (3.14159 * Math.pow(x[0], (14 - 10))) + Math.sin(-3.141) + (0 % x[0])) * x[0] / 3 * 3 / Math.sqrt(x[0] + 12)),
             /* 36 */ x -> Math.pow(x[0], 3) + Math.pow(x[1], 3) + Math.pow(x[2], 3) + Math.pow(x[3], 3) + Math.pow(x[4], 3) + Math.pow(x[5], 3),
-            /* 37 */ x -> Math.sin(Math.sqrt(Math.pow(x[0], 2) + Math.pow(x[1], 2) + Math.pow(x[2], 2)))
+            /* 37 */ x -> Math.sin(Math.sqrt(Math.pow(x[0], 2) + Math.pow(x[1], 2) + Math.pow(x[2], 2))),
+            /* 38 */ x -> x[0] / (1 - x[1]),
+            /* 39 */ x -> x[0] * Math.exp(-(x[1] / (1 - ((x[2] - x[3]) / x[2])))),
+            /* 40 */ x -> (1 / (x[0] * Math.sqrt(2 * Math.PI))) * Math.exp((-Math.pow(x[1] - x[2], 2)) / (2 * Math.pow(x[0], 2)))
         };
     }
+    /*
 
+            39====x1*exp(-(x2/(1-((x3-x4)/x3))))
+            40====(1/(x1*sqrt(2*pi)))*exp((-(x2-x3)^2)/(2*x1^2))  
+     */
     public static final StringBuilder EXPR_MAP = new StringBuilder();
 
     static {
@@ -266,6 +257,7 @@ public class ParserNGWars {
      * @param args
      */
     public static void main(String[] args) {
+        String[] benchmarkList = discoverFiles();
         System.out.println("=========================================================");
         System.out.println("   Welcome to the Math Parser Benchmarks: ParserNG Wars  ");
         System.out.println("=========================================================\n");
@@ -292,7 +284,7 @@ public class ParserNGWars {
         scanner.nextLine(); // Critical: Consume the leftover newline character!
 
         System.out.println("\nSelected Expression: " + EXPRESSIONS[index] + "\n");
-
+        /*
         // 2. Build the Engines Menu
         String menu = """
         Select the Math Engines to benchmark (comma-separated digits):
@@ -309,7 +301,20 @@ public class ParserNGWars {
         [10] com.expression.parser(sbesada/JavaMEP)
         
         Enter engines (e.g., 0,3,8): """;
-        System.out.print(menu);
+         */
+
+        Map<Integer, String> mapping = new HashMap<>();
+        StringBuilder sb = new StringBuilder("Select the Math Engines to benchmark (comma-separated digits):\n");
+        int digits=1;
+        for (String name : benchmarkList) {
+            String digitStr = String.valueOf(digits);
+            sb.append("        [").append(digitStr).append(digitStr.length() == 1 ? "]  " : "] ").append(name.substring(name.lastIndexOf(".") + 1)).append("\n");
+            mapping.put(digits++, name);
+        }
+        sb.append("   \n");
+        sb.append("    Enter engines (e.g., 1,4,9):\n");
+
+        System.out.print(sb.toString());
 
         String digitsCommand = scanner.nextLine(); // Using nextLine() to safely catch spaces
         if (digitsCommand == null || digitsCommand.trim().isEmpty()) {
@@ -333,54 +338,14 @@ public class ParserNGWars {
                 }
 
                 int engineChoice = Integer.parseInt(trimmedToken);
-                switch (engineChoice) {
-                    case 0 -> {
-                        opt.include(NativeJava.class.getSimpleName());
-                        versusBuilder.append("NativeJava vs ");
-                    }
-                    case 1 -> {
-                        opt.include(FieryJanino.class.getSimpleName());
-                        versusBuilder.append("FieryJanino vs ");
-                    }
-                    case 2 -> {
-                        opt.include(BaseJanino.class.getSimpleName());
-                        versusBuilder.append("BaseJanino vs ");
-                    }
-                    case 3 -> {
-                        opt.include(Paralithic.class.getSimpleName());
-                        versusBuilder.append("Paralithic vs ");
-                    }
-                    case 4 -> {
-                        opt.include(MxParser.class.getSimpleName());
-                        versusBuilder.append("MxParser vs ");
-                    }
-                    case 5 -> {
-                        opt.include(Exp4J.class.getSimpleName());
-                        versusBuilder.append("Exp4J vs ");
-                    }
-                    case 6 -> {
-                        opt.include(Parsii.class.getSimpleName());
-                        versusBuilder.append("Parsii vs ");
-                    }
-                    case 7 -> {
-                        opt.include(ParserNGStandard.class.getSimpleName());
-                        versusBuilder.append("ParserNG-Standard vs ");
-                    }
-                    case 8 -> {
-                        opt.include(ParserNGTurboArrayBased.class.getSimpleName());
-                        versusBuilder.append("ParserNG-Turbo-Array-Based vs ");
-                    }
-                    case 9 -> {
-                        opt.include(ParserNGTurboWideningBased.class.getSimpleName());
-                        versusBuilder.append("ParserNG-Turbo-Widening-Args-Based vs ");
-                    }
-                    case 10 -> {
-                        opt.include(ComExpressionParser.class.getSimpleName());
-                        versusBuilder.append("com.expression.parser(sbsesada/JavaMEP) vs ");
-                    }
-                    default ->
-                        System.err.println("Warning: Code [" + engineChoice + "] is invalid and skipped.");
+                String className = mapping.get(engineChoice);
+                if(className == null){
+                      System.err.println("Warning: Code [" + engineChoice + "] is invalid and skipped.");
+                      return;
                 }
+                opt.include(className);
+                String cname = className.substring(className.lastIndexOf(".") + 1);
+                versusBuilder.append(cname).append(" vs ");
                 addedEnginesCount++;
             }
 
@@ -412,6 +377,23 @@ public class ParserNGWars {
         } catch (RunnerException ex) {
             System.getLogger(ParserNGWars.class.getName()).log(System.Logger.Level.ERROR, "JMH Execution failed", ex);
         }
+    }
+
+    public static String[] discoverFiles() {
+        // Replace with your actual package name
+        String packageName = ParserNGWars.class.getPackageName();
+        String terminalClassName = ParserNGWars.class.getSimpleName();
+        System.out.println("terminalClassName: "+terminalClassName);
+        Reflections reflections = new Reflections(packageName);
+        Set<String> classNames = reflections.getStore().get(Scanners.SubTypes.name()).keySet();
+        List<String> list = new ArrayList<>();
+        for (String className : classNames) {
+            // The scanner returns full binary names, let's add them to our list
+            if (!className.toLowerCase().contains("jmh_generated") && !className.toLowerCase().contains(terminalClassName.toLowerCase()) && !className.toLowerCase().contains("baseline")) {
+                list.add(className);
+            }
+        }
+        return list.toArray(String[]::new);
     }
 
     public static void main2(String[] args) {//
