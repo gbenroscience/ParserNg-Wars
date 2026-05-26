@@ -64,8 +64,8 @@ package com.github.gbenroscience.parser.wars.individual;
 import org.openjdk.jmh.infra.Blackhole;
 
 
-public class SimpleParserBenchmark extends ParserNGWars{
-      // === Paralithic Benchmark ===
+public class SimpleParser extends ParserNGWars{
+      // === SimpleParser Benchmark ===
     @org.openjdk.jmh.annotations.Benchmark
     public void spBenchmark(Blackhole blackhole) {
           blackhole.consume(Math.PI*2); 
