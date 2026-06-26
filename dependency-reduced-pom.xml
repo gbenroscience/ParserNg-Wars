@@ -19,7 +19,10 @@
               <finalName>benchmarks</finalName>
               <transformers>
                 <transformer>
-                  <mainClass>org.openjdk.jmh.Main</mainClass>
+                  <mainClass>com.github.gbenroscience.parser.wars.individual.ParserNGWars</mainClass>
+                </transformer>
+                <transformer>
+                  <resource>META-INF/BenchmarkList</resource>
                 </transformer>
               </transformers>
               <filters>
@@ -48,6 +51,17 @@
               <version>1.37</version>
             </path>
           </annotationProcessorPaths>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>com.github.gbenroscience.parser.wars.individual.ParserNGWars</mainClass>
+            </manifest>
+          </archive>
         </configuration>
       </plugin>
     </plugins>
@@ -81,6 +95,6 @@
   <properties>
     <maven.compiler.release>24</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <exec.mainClass>com.github.gbenroscience.parser.wars.ParserNGWars</exec.mainClass>
+    <exec.mainClass>com.github.gbenroscience.parser.wars.individual.ParserNGWars</exec.mainClass>
   </properties>
 </project>

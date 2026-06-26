@@ -5,7 +5,6 @@ import com.github.gbenroscience.parser.wars.Stats;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Level;
@@ -84,7 +83,9 @@ public abstract class ParserNGWars {
         "sin(sqrt(x1^2+x2^2+x3^2))",
         "x1/(1-x2)",
         "x1*exp(-(x2/(1-((x3-x4)/x3))))",
-        "(1/(x1*sqrt(2*pi)))*exp((-(x2-x3)^2)/(2*x1^2))"
+        "(1/(x1*sqrt(2*pi)))*exp((-(x2-x3)^2)/(2*x1^2))",
+        "12*x1 + 3*x2 - 4*x3 + 5*x1 - x2 - 4*x3 + 2*x1 + x2",
+        "0.39894228 / x1 * exp(-((x2 - x3) * (x2 - x3)) / (2 * x1 * x1))"    
     };
 
     static int index = 23;//EXPRESSIONS.length - 3;
@@ -186,7 +187,9 @@ public abstract class ParserNGWars {
             37====sin(sqrt(x1^2+x2^2+x3^2))  
             38====x1/(1-x2)  
             39====x1*exp(-(x2/(1-((x3-x4)/x3)))) 
-            40====(1/(x1*sqrt(2*pi)))*exp((-(x2-x3)^2)/(2*x1^2))  
+            40====(1/(x1*sqrt(2*pi)))*exp((-(x2-x3)^2)/(2*x1^2))
+            41====12*x1 + 3*x2 - 4*x3 + 5*x1 - x2 - 4*x3 + 2*x1 + x2
+            42====0.39894228 / x1 * exp(-((x2 - x3) * (x2 - x3)) / (2 * x1 * x1))  
             """;
 
     protected static final class BenchmarkExpressions {
@@ -238,14 +241,14 @@ public abstract class ParserNGWars {
             /* 37 */ x -> Math.sin(Math.sqrt(Math.pow(x[0], 2) + Math.pow(x[1], 2) + Math.pow(x[2], 2))),
             /* 38 */ x -> x[0] / (1 - x[1]),
             /* 39 */ x -> x[0] * Math.exp(-(x[1] / (1 - ((x[2] - x[3]) / x[2])))),
-            /* 40 */ x -> (1 / (x[0] * Math.sqrt(2 * Math.PI))) * Math.exp((-Math.pow(x[1] - x[2], 2)) / (2 * Math.pow(x[0], 2)))
+            /* 40 */ x -> (1 / (x[0] * Math.sqrt(2 * Math.PI))) * Math.exp((-Math.pow(x[1] - x[2], 2)) / (2 * Math.pow(x[0], 2))),
+            /* 41 */ x -> (12*x[0]+3*x[1]-4*x[2]+5*x[0]-x[1]-4*x[2]+2*x[0]+x[1]),
+            /* 42 */ x -> (0.39894228/x[0]*Math.exp(-((x[1]-x[2]) * (x[1]-x[2])) /(2 * x[0] *x[0])))
+                
+        
         };
     }
-    /*
-
-            39====x1*exp(-(x2/(1-((x3-x4)/x3))))
-            40====(1/(x1*sqrt(2*pi)))*exp((-(x2-x3)^2)/(2*x1^2))  
-     */
+ 
     public static final StringBuilder EXPR_MAP = new StringBuilder();
 
     static {

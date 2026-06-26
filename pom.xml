@@ -8,7 +8,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>24</maven.compiler.release>
-        <exec.mainClass>com.github.gbenroscience.parser.wars.ParserNGWars</exec.mainClass>
+        <exec.mainClass>com.github.gbenroscience.parser.wars.individual.ParserNGWars</exec.mainClass>
     </properties>
     <repositories>
         <repository>
@@ -51,8 +51,11 @@
                             <finalName>benchmarks</finalName>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>org.openjdk.jmh.Main</mainClass>
+                                    <mainClass>com.github.gbenroscience.parser.wars.individual.ParserNGWars</mainClass>
                                 </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                        <resource>META-INF/BenchmarkList</resource>
+                    </transformer>
                             </transformers>
                             <filters>
                                 <filter>
@@ -83,6 +86,18 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+            <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>3.3.0</version>
+            <configuration>
+                <archive>
+                    <manifest>
+                        <mainClass>com.github.gbenroscience.parser.wars.individual.ParserNGWars</mainClass>
+                    </manifest>
+                </archive>
+            </configuration>
+        </plugin>
         </plugins>
     </build>
     <dependencies>
@@ -102,7 +117,13 @@
         <dependency>
             <groupId>com.github.gbenroscience</groupId>
             <artifactId>parser-ng</artifactId>
-            <version>1.1.5</version>
+            <version>2.0.5</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>com.github.gbenroscience</groupId>
+            <artifactId>parser-ng-simd</artifactId>
+            <version>2.0.5</version>
             <type>jar</type>
         </dependency>
         <!--mXparser-->
